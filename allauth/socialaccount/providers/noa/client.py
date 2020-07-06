@@ -15,19 +15,19 @@ class Scope(object):
     NAME = 'name'
 
 
-class NoahowOAuth2Client(OAuth2Client):
+class NoaOAuth2Client(OAuth2Client):
     """
-    Custom client because `Sign In With noahow`:
+    Custom client because `Sign In With noa`:
         * requires `response_mode` field in redirect_url
         * requires special `client_secret` as JWT
     """
 
     def generate_client_secret(self):
-        """Create a JWT signed with an noahow provided private key"""
+        """Create a JWT signed with an noa provided private key"""
         now = datetime.utcnow()
         claims = {
             'iss': self.key,
-            'aud': 'https://noahowid.noahow.com',
+            'aud': 'https://noaid.noa.com',
             'sub': self.get_client_id(),
             'iat': now,
             'exp': now + timedelta(hours=1),

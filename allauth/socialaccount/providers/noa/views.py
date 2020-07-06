@@ -20,25 +20,25 @@ from allauth.socialaccount.providers.oauth2.views import (
 )
 from allauth.utils import get_request_param
 
-from .noahow_session import add_noahow_session, persist_noahow_session
-from .client import NoahowOAuth2Client
-from .provider import NoahowProvider
+from .noa_session import add_noa_session, persist_noa_session
+from .client import NoaOAuth2Client
+from .provider import NoaProvider
 
 
-class NoahowOAuth2Adapter(OAuth2Adapter):
-    client_cls = NoahowOAuth2Client
-    provider_id = NoahowProvider.id
-    access_token_url = "https://noahowid.noahow.com/auth/token"
-    authorize_url = "https://noahowid.noahow.com/auth/authorize"
-    public_key_url = "https://noahowid.noahow.com/auth/keys"
+class NoaOAuth2Adapter(OAuth2Adapter):
+    client_cls = NoaOAuth2Client
+    provider_id = NoaProvider.id
+    access_token_url = "https://noaid.noa.com/auth/token"
+    authorize_url = "https://noaid.noa.com/auth/authorize"
+    public_key_url = "https://noaid.noa.com/auth/keys"
 
-    def _get_noahow_public_key(self, kid):
+    def _get_noa_public_key(self, kid):
         response = requests.get(self.public_key_url)
         response.raise_for_status()
         try:
             data = response.json()
         except json.JSONDecodeError as e:
-            raise OAuth2Error("Error retrieving noahow public key.") from e
+            raise OAuth2Error("Error retrieving noa public key.") from e
 
         for d in data["keys"]:
             if d["kid"] == kid:
@@ -49,9 +49,9 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
         Get the public key which matches the `kid` in the id_token header.
         """
         kid = jwt.get_unverified_header(id_token)["kid"]
-        noahow_public_key = self._get_noahow_public_key(kid=kid)
+        noa_public_key = self._get_noa_public_key(kid=kid)
 
-        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(noahow_public_key))
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(noa_public_key))
         return public_key
 
     def get_client_id(self, provider):
@@ -70,7 +70,7 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
                 algorithms=["RS256"],
                 verify=True,
                 audience=allowed_auds,
-                issuer="https://noahowid.noahow.com",
+                issuer="https://noaid.noa.com",
             )
             return identity_data
 
@@ -86,7 +86,7 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
             token.expires_at = timezone.now() + timedelta(seconds=int(expires_in))
 
         # `user_data` is a big flat dictionary with the parsed JWT claims
-        # access_tokens, and user info from the noahow post.
+        # access_tokens, and user info from the noa post.
         identity_data = self.get_verified_identity_data(data["id_token"])
         token.user_data = {**data, **identity_data}
 
@@ -99,17 +99,17 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
         )
         login.state["id_token"] = token.user_data
 
-        # We can safely remove the noahow login session now
+        # We can safely remove the noa login session now
         # Note: The cookie will remain, but it's set to delete on browser close
         try:
-            request.noahow_login_session.delete()
+            request.noa_login_session.delete()
         except AttributeError:
             pass
 
         return login
 
     def get_user_scope_data(self, request):
-        user_scope_data = request.noahow_login_session.get("user", "")
+        user_scope_data = request.noa_login_session.get("user", "")
         try:
             return json.loads(user_scope_data)
         except json.JSONDecodeError:
@@ -118,8 +118,8 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
             return {}
 
     def get_access_token_data(self, request, app, client):
-        """ We need to gather the info from the noahow specific login """
-        add_noahow_session(request)
+        """ We need to gather the info from the noa specific login """
+        add_noa_session(request)
 
         # Exchange `code`
         code = get_request_param(request, "code")
@@ -128,18 +128,18 @@ class NoahowOAuth2Adapter(OAuth2Adapter):
         return {
             **access_token_data,
             **self.get_user_scope_data(request),
-            "id_token": request.noahow_login_session.get("id_token"),
+            "id_token": request.noa_login_session.get("id_token"),
         }
 
 
 @csrf_exempt
-def noahow_post_callback(request, finish_endpoint_name="noahow_finish_callback"):
+def noa_post_callback(request, finish_endpoint_name="noa_finish_callback"):
     """
-    noahow uses a `form_post` response type, which due to
+    noa uses a `form_post` response type, which due to
     CORS/Samesite-cookie rules means this request cannot access
     the request since the session cookie is unavailable.
 
-    We work around this by storing the noahow response in a
+    We work around this by storing the noa response in a
     separate, temporary session and redirecting to a more normal
     oauth flow.
 
@@ -149,7 +149,7 @@ def noahow_post_callback(request, finish_endpoint_name="noahow_finish_callback")
             callback endpoint.
     """
 
-    add_noahow_session(request)
+    add_noa_session(request)
 
     # Add regular OAuth2 params to the URL - reduces the overrides required
     keys_to_put_in_url = ["code", "state", "error"]
@@ -159,19 +159,19 @@ def noahow_post_callback(request, finish_endpoint_name="noahow_finish_callback")
         if value:
             url_params[key] = value
 
-    # Add other params to the noahow_login_session
+    # Add other params to the noa_login_session
     keys_to_save_to_session = ["user", "id_token"]
     for key in keys_to_save_to_session:
-        request.noahow_login_session[key] = get_request_param(request, key, "")
+        request.noa_login_session[key] = get_request_param(request, key, "")
 
     url = request.build_absolute_uri(reverse(finish_endpoint_name))
     response = HttpResponseRedirect(
         "{url}?{query}".format(url=url, query=urlencode(url_params))
     )
-    persist_noahow_session(request, response)
+    persist_noa_session(request, response)
     return response
 
 
-oauth2_login = OAuth2LoginView.adapter_view(NoahowOAuth2Adapter)
-oauth2_callback = noahow_post_callback
-oauth2_finish_login = OAuth2CallbackView.adapter_view(NoahowOAuth2Adapter)
+oauth2_login = OAuth2LoginView.adapter_view(NoaOAuth2Adapter)
+oauth2_callback = noa_post_callback
+oauth2_finish_login = OAuth2CallbackView.adapter_view(NoaOAuth2Adapter)

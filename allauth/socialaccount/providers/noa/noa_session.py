@@ -4,29 +4,29 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.utils.cache import patch_vary_headers
 
-NOAHOW_SESSION_COOKIE_NAME = "noahow-login-session"
+NOA_SESSION_COOKIE_NAME = "noa-login-session"
 
 engine = import_module(settings.SESSION_ENGINE)
 SessionStore = engine.SessionStore
 
 
-def add_apple_session(request):
+def add_noa_session(request):
     """
-    Fetch an apple login session
+    Fetch an noa login session
     """
-    session_key = request.COOKIES.get(NOAHOW_SESSION_COOKIE_NAME)
-    request.apple_login_session = SessionStore(session_key)
+    session_key = request.COOKIES.get(NOA_SESSION_COOKIE_NAME)
+    request.noa_login_session = SessionStore(session_key)
 
 
-def persist_apple_session(request, response):
+def persist_noa_session(request, response):
     """
-    Save `request.apple_login_session` and set the cookie
+    Save `request.noa_login_session` and set the cookie
     """
     patch_vary_headers(response, ('Cookie',))
-    request.apple_login_session.save()
+    request.noa_login_session.save()
     response.set_cookie(
-        NOAHOW_SESSION_COOKIE_NAME,
-        request.apple_login_session.session_key,
+        NOA_SESSION_COOKIE_NAME,
+        request.noa_login_session.session_key,
         max_age=None,
         expires=None,
         domain=settings.SESSION_COOKIE_DOMAIN,

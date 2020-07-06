@@ -4,9 +4,9 @@ from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 
 
-class NoahowProvider(OAuth2Provider):
-    id = 'noahow'
-    name = 'noahow'
+class NoaProvider(OAuth2Provider):
+    id = 'noa'
+    name = 'noa'
     account_class = ProviderAccount
 
     def extract_uid(self, data):
@@ -47,4 +47,4 @@ class NoahowProvider(OAuth2Provider):
             scopes.append("email")
         return scopes
 
-provider_classes = [NoahowProvider]
+provider_classes = [NoaProvider]

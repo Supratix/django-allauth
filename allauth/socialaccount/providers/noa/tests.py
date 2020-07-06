@@ -11,11 +11,11 @@ import jwt
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase, mocked_response
 
-from .noahow_session import NOAHOW_SESSION_COOKIE_NAME
-from .provider import NoahowProvider
+from .noa_session import NOA_SESSION_COOKIE_NAME
+from .provider import NoaProvider
 
 
-# Generated on https://mkjwk.org/, used to sign and verify the noahow id_token
+# Generated on https://mkjwk.org/, used to sign and verify the noa id_token
 TESTING_JWT_KEYSET = {
     "p": (
         "4ADzS5jKx_kdQihyOocVS0Qwwo7m0f7Ow56EadySJ-cmnwoHHF3AxgRaq-h-KwybSphv"
@@ -66,7 +66,7 @@ TESTING_JWT_KEYSET = {
 }
 
 
-# Mocked version of the test data from https://noahowid.noahow.com/auth/keys
+# Mocked version of the test data from https://noaid.noa.com/auth/keys
 KEY_SERVER_RESP_JSON = json.dumps({
     "keys": [
         {
@@ -83,7 +83,7 @@ KEY_SERVER_RESP_JSON = json.dumps({
 
 def sign_id_token(payload):
     """
-    Sign a payload as noahow normally would for the id_token.
+    Sign a payload as noa normally would for the id_token.
     """
     signing_key = jwt.algorithms.RSAAlgorithm.from_jwk(
         json.dumps(TESTING_JWT_KEYSET)
@@ -96,19 +96,19 @@ def sign_id_token(payload):
     ).decode("utf8")
 
 
-class NoahowTests(OAuth2TestsMixin, TestCase):
-    provider_id = NoahowProvider.id
+class NoaTests(OAuth2TestsMixin, TestCase):
+    provider_id = NoaProvider.id
 
-    def get_noahow_id_token_payload(self):
+    def get_noa_id_token_payload(self):
         now = datetime.utcnow()
         return {
-            "iss": "https://noahowid.noahow.com",
+            "iss": "https://noaid.noa.com",
             "aud": "app123id",  # Matches `setup_app`
             "exp": now + timedelta(hours=1),
             "iat": now,
             "sub": "000313.c9720f41e9434e18987a.1218",
             "at_hash": "CkaUPjk4MJinaAq6Z0tGUA",
-            "email": "test@privaterelay.noahowid.com",
+            "email": "test@privaterelay.noaid.com",
             "email_verified": "true",
             "is_private_email": "true",
             "auth_time": 1234345345,  # not converted automatically by pyjwt
@@ -116,9 +116,9 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
 
     def get_login_response_json(self, with_refresh_token=True):
         """
-        `with_refresh_token` is not optional for noahow, so it's ignored.
+        `with_refresh_token` is not optional for noa, so it's ignored.
         """
-        id_token = sign_id_token(self.get_noahow_id_token_payload())
+        id_token = sign_id_token(self.get_noa_id_token_payload())
 
         return json.dumps(
             {
@@ -132,8 +132,8 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
 
     def get_mocked_response(self):
         """
-        noahow is unusual in that the `id_token` contains all the user info
-        so no profile info request is made. However, it does need the
+        noa is unusual in that the `id_token` contains all the user info
+        so no profile info request is made. ever, it does need the
         public key verification, so this mocked response is the public
         key request in order to verify the authenticity of the id_token.
         """
@@ -143,16 +143,16 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
 
     def get_complete_parameters(self, auth_request_params):
         """
-        Add noahow specific response parameters which they include in the
+        Add noa specific response parameters which they include in the
         form_post response.
 
-        https://developer.noahow.com/documentation/sign_in_with_noahow/sign_in_with_noahow_js/incorporating_sign_in_with_noahow_into_other_platforms
+        https://developer.noa.com/documentation/sign_in_with_noa/sign_in_with_noa_js/incorporating_sign_in_with_noa_into_other_platforms
         """
         params = super().get_complete_parameters(auth_request_params)
         params.update({
-            "id_token": sign_id_token(self.get_noahow_id_token_payload()),
+            "id_token": sign_id_token(self.get_noa_id_token_payload()),
             "user": json.dumps({
-                "email": "private@noahowid.noahow.com",
+                "email": "private@noaid.noa.com",
                 "name": {
                     "firstName": "A",
                     "lastName": "B",
@@ -184,7 +184,7 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
                 complete_url,
                 data=self.get_complete_parameters(q),
             )
-            assert reverse('noahow_finish_callback') in resp.url
+            assert reverse('noa_finish_callback') in resp.url
 
             # Follow the redirect
             resp = self.client.get(resp.url)
@@ -192,7 +192,7 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
         return resp
 
     def test_authentication_error(self):
-        """ Override base test because noahow posts errors """
+        """ Override base test because noa posts errors """
         resp = self.client.post(
             reverse(self.provider.id + '_callback'),
             data={
@@ -200,7 +200,7 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
                 "state": "testingstate123"
             }
         )
-        assert reverse('noahow_finish_callback') in resp.url
+        assert reverse('noa_finish_callback') in resp.url
         # Follow the redirect
         resp = self.client.get(resp.url)
 
@@ -209,25 +209,25 @@ class NoahowTests(OAuth2TestsMixin, TestCase):
             'socialaccount/authentication_error.%s' % getattr(
                 settings, 'ACCOUNT_TEMPLATE_EXTENSION', 'html'))
 
-    def test_noahow_finish(self):
+    def test_noa_finish(self):
         resp = self.login(self.get_mocked_response())
 
         # Check request generating the response
-        finish_url = reverse('noahow_finish_callback')
+        finish_url = reverse('noa_finish_callback')
         self.assertEqual(resp.request['PATH_INFO'], finish_url)
         self.assertTrue('state' in resp.request['QUERY_STRING'])
         self.assertTrue('code' in resp.request['QUERY_STRING'])
 
-        # Check have cookie containing noahow session
-        self.assertTrue(NOAHOW_SESSION_COOKIE_NAME in self.client.cookies)
+        # Check have cookie containing noa session
+        self.assertTrue(NOA_SESSION_COOKIE_NAME in self.client.cookies)
 
         # Session should have been cleared
-        noahow_session_cookie = self.client.cookies.get(
-            NOAHOW_SESSION_COOKIE_NAME)
+        noa_session_cookie = self.client.cookies.get(
+            NOA_SESSION_COOKIE_NAME)
         engine = import_module(settings.SESSION_ENGINE)
         SessionStore = engine.SessionStore
-        noahow_login_session = SessionStore(noahow_session_cookie.value)
-        self.assertEqual(len(noahow_login_session.keys()), 0)
+        noa_login_session = SessionStore(noa_session_cookie.value)
+        self.assertEqual(len(noa_login_session.keys()), 0)
 
         # Check cookie path was correctly set
-        self.assertEqual(noahow_session_cookie.get('path'), finish_url)
+        self.assertEqual(noa_session_cookie.get('path'), finish_url)
