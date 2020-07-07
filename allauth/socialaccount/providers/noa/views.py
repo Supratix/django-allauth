@@ -28,8 +28,8 @@ from .provider import NoaProvider
 class NoaOAuth2Adapter(OAuth2Adapter):
     client_cls = NoaOAuth2Client
     provider_id = NoaProvider.id
-    access_token_url = "https://noaid.noa.com/auth/token"
-    authorize_url = "https://noaid.noa.com/auth/authorize"
+    access_token_url = "https://noa.software/authorization/connect/token"
+    authorize_url = "https://noa.software/authorization/connect/authorize"
     public_key_url = "https://noaid.noa.com/auth/keys"
 
     def _get_noa_public_key(self, kid):
