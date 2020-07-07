@@ -1,11 +1,11 @@
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
 
-from .provider import DigitalOceanProvider
+from .provider import EduAppsProvider
 
 
-class DigitalOceanTests(OAuth2TestsMixin, TestCase):
-    provider_id = DigitalOceanProvider.id
+class EduAppsProviderTests(OAuth2TestsMixin, TestCase):
+    provider_id = EduAppsProvider.id
 
     def get_mocked_response(self):
         return MockedResponse(200, """
