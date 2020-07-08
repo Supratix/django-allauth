@@ -41,9 +41,10 @@ class NoaOAuth2Adapter(OAuth2Adapter):
     authorize_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/authorize'
     profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
-
     def complete_login(self, request, app, token, response):
         extra_data = requests.post(self.access_token_url, params={
+            'client_id': 'slp_client',
+            'client_secret': '',
             'grant_type': 'authorization_code',
             'code': token.token,
             'redirect_uri': 'https://noahow.com/accounts/noa/login/callback/',
@@ -53,6 +54,7 @@ class NoaOAuth2Adapter(OAuth2Adapter):
             request,
             extra_data.json()
         )
+
 
 oauth2_login = OAuth2LoginView.adapter_view(NoaOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(NoaOAuth2Adapter)
