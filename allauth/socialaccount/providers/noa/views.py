@@ -42,7 +42,10 @@ class NoaOAuth2Adapter(OAuth2Adapter):
     profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
     def complete_login(self, request, app, token, **kwargs):
-        extra_data = {}
+        response = requests.get(
+            self.profile_url,
+            params={'access_token': token})
+        extra_data = response.json()
         return self.get_provider().sociallogin_from_response(
             request,
             extra_data)
