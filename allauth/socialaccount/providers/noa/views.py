@@ -1,28 +1,12 @@
-import json
 import requests
-from datetime import timedelta
 
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.http import urlencode
-from django.views.decorators.csrf import csrf_exempt
-
-import jwt
-from requests import HTTPError
-
-from allauth.socialaccount.models import SocialApp, SocialToken
-from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
     OAuth2CallbackView,
     OAuth2LoginView,
 )
-from allauth.utils import get_request_param
-
-from .noa_session import add_noa_session, persist_noa_session
-from .client import NoaOAuth2Client
 from .provider import NoaProvider
+
 
 # {"issuer":"https://noaidentitydev.azurewebsites.net/authorization",
 #  "jwks_uri":"https://noaidentitydev.azurewebsites.net/authorization/.well-known/openid-configuration/jwks",
