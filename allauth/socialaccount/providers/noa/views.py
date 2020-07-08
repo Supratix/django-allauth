@@ -32,6 +32,7 @@ from .provider import NoaProvider
 #  "subject_types_supported":["public"],
 #  "code_challenge_methods_supported":["plain","S256"],
 #  "request_parameter_supported":true}
+from ..oauth2.client import OAuth2Error
 
 
 class NoaOAuth2Adapter(OAuth2Adapter):
@@ -41,12 +42,13 @@ class NoaOAuth2Adapter(OAuth2Adapter):
     profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
     def complete_login(self, request, app, token, **kwargs):
-        resp = requests.get(self.access_token_url,
-                            params={'access_token': token.token})
-        extra_data = resp.json()
-        return self.get_provider().sociallogin_from_response(request,
-                                                             extra_data)
-
+        response = requests.get(
+            self.profile_url,
+            params={'access_token': token})
+        extra_data = response.json()
+        return self.get_provider().sociallogin_from_response(
+            request,
+            extra_data)
 
 oauth2_login = OAuth2LoginView.adapter_view(NoaOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(NoaOAuth2Adapter)
