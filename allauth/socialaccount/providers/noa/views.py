@@ -44,7 +44,6 @@ class NoaOAuth2Adapter(OAuth2Adapter):
     def complete_login(self, request, app, token, response):
         extra_data = requests.post(self.access_token_url, params={
             'client_id': app.client_id,
-            'client_secret': app.secret,
             'grant_type': 'authorization_code',
             'code': token.token,
             'redirect_uri': 'https://noahow.com/accounts/noa/login/callback/',
