@@ -16,7 +16,7 @@ class NoaProvider(OAuth2Provider):
     account_class = NoaAccount
 
     def extract_uid(self, data):
-        return str(data['id'])
+        return str(data['preferred_username'])
 
 
 provider_classes = [NoaProvider]
