@@ -1,4 +1,5 @@
 import requests
+import jwt
 
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
@@ -42,13 +43,27 @@ class NoaOAuth2Adapter(OAuth2Adapter):
     profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
     def complete_login(self, request, app, token, response):
-        extra_data = requests.post(self.access_token_url, params={
+        extra_data_token = requests.post(self.access_token_url, params={
             'client_id': app.client_id,
             'grant_type': 'authorization_code',
             'code': token.token,
             'redirect_uri': 'https://noahow.com/accounts/noa/login/callback/',
         })
+        public_key = (
+            b"-----BEGIN PUBLIC KEY-----\n"
+            b"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxR0h8e9JGS5cLdEKZZiz"
+            b"I0zz1PqRyDPPiRUNDBXUHNkneCWcyjKegGUdqVfcMjQ9QF1G51tjDLHzN3M7o7/Q"
+            b"1eSaAUR8nVMlCgDz23ODks91kXDVk0cYAMaEUHfSyq3fl3VoXJ9/n36ewqG8ger0"
+            b"k6Deyx05weSmqe27hlxjxyM7TaCnb6HTvDHUvdKyYkP4r3eBTB673/xxG2zULnWu"
+            b"cfnCXzIwLqkFhBWk941IaRVvy5xp4wXcch45T6pYKCkBF2pj6mreMKExg1uMYY1n"
+            b"CuyFg5qLa3PMRhSm6wRHGn5HrW3tWSJ7bTImI9Jm1tBT/ulcrns5PBzvKYPWSv+q"
+            b"IwIDAQAB"
+            b"\n-----END PUBLIC KEY-----"
+        )
 
+        extra_data = jwt.decode(
+            extra_data_token, public_key, audience="api", algorithms="RS256"
+        )
         return self.get_provider().sociallogin_from_response(
             request,
             extra_data.json()
