@@ -38,7 +38,7 @@ from ..oauth2.client import OAuth2Error
 
 class NoaOAuth2Adapter(OAuth2Adapter):
     provider_id = NoaProvider.id
-    access_token_url = 'https://noaidentitydev.azurewebsites.net/' #'https://noaidentitydev.azurewebsites.net/authorization/connect/token'
+    access_token_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/token'
     authorize_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/authorize'
     profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
@@ -64,6 +64,8 @@ class NoaOAuth2Adapter(OAuth2Adapter):
         # extra_data = jwt.decode(
         #     extra_data_token, public_key, audience="api", algorithms="RS256"
         # )
+
+
         extra_data = {}
 
         return self.get_provider().sociallogin_from_response(
