@@ -38,9 +38,9 @@ from ..oauth2.client import OAuth2Error
 
 class NoaOAuth2Adapter(OAuth2Adapter):
     provider_id = NoaProvider.id
-    access_token_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/token'
-    authorize_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/authorize'
-    profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
+    access_token_url = 'https://noaidentitydev.azurewebsites.net/' #'https://noaidentitydev.azurewebsites.net/authorization/connect/token'
+    authorize_url = 'https://noaidentitydev.azurewebsites.net/'#'https://noaidentitydev.azurewebsites.net/authorization/connect/authorize'
+    profile_url = 'https://noaidentitydev.azurewebsites.net/' #'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
     def complete_login(self, request, app, token, response):
         # extra_data_token = requests.post(self.access_token_url, params={
