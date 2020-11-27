@@ -450,6 +450,7 @@ class DefaultAccountAdapter(object):
             email_template = 'account/email/email_confirmation_signup'
         else:
             email_template = 'account/email/email_confirmation'
+        #TODO Add Instance Email Template and Origin Email-Address
         self.send_mail(email_template,
                        emailconfirmation.email_address.email,
                        ctx)
