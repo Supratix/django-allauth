@@ -475,9 +475,9 @@ class DefaultAccountAdapter(object):
         if customeremailtemplate:
 
             if signup:
-                email_template = 'account/email/email_confirmation_signup.txt'
+                email_template = 'account/email/email_confirmation_signup_message.txt'
             else:
-                email_template = 'account/email/email_confirmation.txt'
+                email_template = 'account/email/email_confirmation_message.txt'
             text_message = render_to_string(
                 email_template, ctx
             )
