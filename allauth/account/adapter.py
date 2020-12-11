@@ -190,7 +190,8 @@ class DefaultAccountAdapter(object):
         Next to simply returning True/False you can also intervene the
         regular flow by raising an ImmediateHttpResponse
         """
-        return True
+
+        return not request.tenant.deactivate_registration
 
     def new_user(self, request):
         """
@@ -457,6 +458,7 @@ class DefaultAccountAdapter(object):
             "key": emailconfirmation.key,
         }
 
+        import boto3
         from store.models import (
             TemplaterrTemplate,
             CustomerEmailTemplate,
@@ -478,10 +480,11 @@ class DefaultAccountAdapter(object):
                 email_template = 'account/email/email_confirmation_signup_message.txt'
             else:
                 email_template = 'account/email/email_confirmation_message.txt'
+
             text_message = render_to_string(
                 email_template, ctx
             )
-            email_ctx = {
+            ctx = {
                 "user": emailconfirmation.email_address.user,
                 "user_display": emailconfirmation.email_address.user.username,
                 "content": text_message.encode('utf-8'),
@@ -489,18 +492,47 @@ class DefaultAccountAdapter(object):
             templ = TemplaterrTemplate.objects.get(
                 pk=customeremailtemplate.email_template.pk
             )
-
             django_engine = engines["django"]
             email_template = django_engine.from_string(
                 templ.html.encode('utf-8')
-            ).render(email_ctx)
-            email_template.send()
+            ).render(ctx)
+
+            client = boto3.client("ses", region_name="eu-west-1")
+            subject = 'account/email/email_confirmation_subject.txt'
+
+            try:
+                from django.db import connection
+                from origin.models import Origin
+
+                origin = Origin.objects.get(schema_name=connection.schema_name)
+                if origin.no_reply_email == "hello@supratixmail.com":
+                    from_email = "" + str(origin.schema_name) + "@supratixmail.com"
+                else:
+                    from_email = origin.no_reply_email
+            except:
+                from_email = settings.DEFAULT_FROM_EMAIL
+
+            to = emailconfirmation.email_address.user.email
+            client.send_email(
+                Source=from_email,
+                Destination={"ToAddresses": [to]},
+                Message={
+                    "Subject": {"Data": subject, "Charset": "UTF-8"},
+                    "Body": {
+                        "Text": {
+                            "Data": text_message,
+                            "Charset": "UTF-8",
+                        },
+                        "Html": {"Data": email_template, "Charset": "UTF-8"},
+                    },
+                },
+            )
+
         else:
             if signup:
                 email_template = 'account/email/email_confirmation_signup'
             else:
                 email_template = 'account/email/email_confirmation'
-
 
             self.send_mail(email_template,
                            emailconfirmation.email_address.email,
