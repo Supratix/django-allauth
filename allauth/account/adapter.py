@@ -494,7 +494,7 @@ class DefaultAccountAdapter(object):
             email_template = django_engine.from_string(
                 templ.html.encode('utf-8')
             ).render(email_ctx)
-
+            email_template.send()
         else:
             if signup:
                 email_template = 'account/email/email_confirmation_signup'
@@ -502,9 +502,9 @@ class DefaultAccountAdapter(object):
                 email_template = 'account/email/email_confirmation'
 
 
-        self.send_mail(email_template,
-                       emailconfirmation.email_address.email,
-                       ctx)
+            self.send_mail(email_template,
+                           emailconfirmation.email_address.email,
+                           ctx)
 
     def respond_user_inactive(self, request, user):
         return HttpResponseRedirect(
