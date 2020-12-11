@@ -484,7 +484,7 @@ class DefaultAccountAdapter(object):
             email_ctx = {
                 "user": emailconfirmation.email_address.user,
                 "user_display": emailconfirmation.email_address.user.username,
-                "content": text_message,
+                "content": text_message.encode('utf-8'),
             }
             templ = TemplaterrTemplate.objects.get(
                 pk=customeremailtemplate.email_template.pk
@@ -492,7 +492,7 @@ class DefaultAccountAdapter(object):
 
             django_engine = engines["django"]
             email_template = django_engine.from_string(
-                templ.html
+                templ.html.encode('utf-8')
             ).render(email_ctx)
 
         else:
