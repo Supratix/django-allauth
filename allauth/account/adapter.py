@@ -191,7 +191,7 @@ class DefaultAccountAdapter(object):
         regular flow by raising an ImmediateHttpResponse
         """
 
-        return request.tenant.deactivate_registration
+        return True
 
     def new_user(self, request):
         """
