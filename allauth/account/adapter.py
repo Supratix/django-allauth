@@ -483,6 +483,7 @@ class DefaultAccountAdapter(object):
             )
             email_ctx = {
                 "user": emailconfirmation.email_address.user,
+                "user_display": emailconfirmation.email_address.user.username,
                 "content": text_message,
             }
             templ = TemplaterrTemplate.objects.get(
