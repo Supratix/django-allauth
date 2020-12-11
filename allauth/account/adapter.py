@@ -449,17 +449,58 @@ class DefaultAccountAdapter(object):
         activate_url = self.get_email_confirmation_url(
             request,
             emailconfirmation)
+
         ctx = {
             "user": emailconfirmation.email_address.user,
             "activate_url": activate_url,
             "current_site": current_site,
             "key": emailconfirmation.key,
         }
-        if signup:
-            email_template = 'account/email/email_confirmation_signup'
+
+        from store.models import (
+            TemplaterrTemplate,
+            CustomerEmailTemplate,
+        )
+        from django.template import loader, engines
+
+        customeremailtemplate = None
+        try:
+            customeremailtemplate = (
+                CustomerEmailTemplate.objects.get(
+                    customer_origin_email_set=request.tenant
+                )
+            )
+        except:
+            pass
+        if customeremailtemplate:
+
+            if signup:
+                email_template = 'account/email/email_confirmation_signup'
+            else:
+                email_template = 'account/email/email_confirmation'
+            text_message = render_to_string(
+                email_template, ctx
+            )
+            email_ctx = {
+                "user": emailconfirmation.email_address.user,
+                "content": text_message,
+            }
+            templ = TemplaterrTemplate.objects.get(
+                pk=customeremailtemplate.email_template.pk
+            )
+
+            django_engine = engines["django"]
+            email_template = django_engine.from_string(
+                templ.html
+            ).render(email_ctx)
+
         else:
-            email_template = 'account/email/email_confirmation'
-        #TODO Add Instance Email Template and Origin Email-Address
+            if signup:
+                email_template = 'account/email/email_confirmation_signup'
+            else:
+                email_template = 'account/email/email_confirmation'
+
+
         self.send_mail(email_template,
                        emailconfirmation.email_address.email,
                        ctx)
