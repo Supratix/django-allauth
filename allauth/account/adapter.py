@@ -499,7 +499,7 @@ class DefaultAccountAdapter(object):
             ).render(ctx)
 
             client = boto3.client("ses", region_name="eu-west-1")
-            subject = _('Bitte Ihre E-Mail-Adresse best\xc3tigen.')
+            subject = _('Bitte Ihre E-Mail-Adresse best\xc3\xa4tigen.')
 
             try:
                 from django.db import connection
