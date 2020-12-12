@@ -488,7 +488,7 @@ class DefaultAccountAdapter(object):
             ctx = {
                 "user": emailconfirmation.email_address.user,
                 "user_display": emailconfirmation.email_address.user.username,
-                "content": text_message.encode('utf-8'),
+                "content": text_message,
             }
             templ = TemplaterrTemplate.objects.get(
                 pk=customeremailtemplate.email_template.pk
@@ -521,7 +521,7 @@ class DefaultAccountAdapter(object):
                     "Subject": {"Data": subject, "Charset": "UTF-8"},
                     "Body": {
                         "Text": {
-                            "Data": text_message.decode('utf-8'),
+                            "Data": text_message,
                             "Charset": "UTF-8",
                         },
                         "Html": {"Data": email_template, "Charset": "UTF-8"},
