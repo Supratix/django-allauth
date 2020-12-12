@@ -518,10 +518,10 @@ class DefaultAccountAdapter(object):
                 Source=from_email,
                 Destination={"ToAddresses": [to]},
                 Message={
-                    "Subject": {"Data": subject, "Charset": "UTF-8"},
+                    "Subject": {"Data": str(subject), "Charset": "UTF-8"},
                     "Body": {
                         "Text": {
-                            "Data": text_message,
+                            "Data": str(text_message),
                             "Charset": "UTF-8",
                         },
                         "Html": {"Data": email_template, "Charset": "UTF-8"},
