@@ -495,7 +495,7 @@ class DefaultAccountAdapter(object):
             )
             django_engine = engines["django"]
             email_template = django_engine.from_string(
-                templ.html.decode('utf-8')
+                templ.html
             ).render(ctx)
 
             client = boto3.client("ses", region_name="eu-west-1")
