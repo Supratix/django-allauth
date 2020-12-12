@@ -464,6 +464,7 @@ class DefaultAccountAdapter(object):
             CustomerEmailTemplate,
         )
         from django.template import loader, engines
+        from django.utils.translation import ugettext_lazy as _
 
         customeremailtemplate = None
         try:
@@ -494,11 +495,11 @@ class DefaultAccountAdapter(object):
             )
             django_engine = engines["django"]
             email_template = django_engine.from_string(
-                templ.html.encode('utf-8')
+                templ.html.decode('utf-8')
             ).render(ctx)
 
             client = boto3.client("ses", region_name="eu-west-1")
-            subject = 'account/email/email_confirmation_subject.txt'
+            subject = _('Bitte Ihre E-Mail-Adresse best\xc3tigen.')
 
             try:
                 from django.db import connection
@@ -520,7 +521,7 @@ class DefaultAccountAdapter(object):
                     "Subject": {"Data": subject, "Charset": "UTF-8"},
                     "Body": {
                         "Text": {
-                            "Data": text_message,
+                            "Data": text_message.decode('utf-8'),
                             "Charset": "UTF-8",
                         },
                         "Html": {"Data": email_template, "Charset": "UTF-8"},
