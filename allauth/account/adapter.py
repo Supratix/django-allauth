@@ -457,87 +457,22 @@ class DefaultAccountAdapter(object):
             "current_site": current_site,
             "key": emailconfirmation.key,
         }
-
-        import boto3
-        from store.models import (
-            TemplaterrTemplate,
-            CustomerEmailTemplate,
-        )
-        from django.template import loader, engines
+        from supramailer.utils import send_supramail
         from django.utils.translation import ugettext_lazy as _
 
-        customeremailtemplate = None
-        try:
-            customeremailtemplate = (
-                CustomerEmailTemplate.objects.get(
-                    customer_origin_email_set=request.tenant
-                )
-            )
-        except:
-            pass
-        if customeremailtemplate:
+        subject = _('Bitte Ihre E-Mail-Adresse best\xc3\xa4tigen.')
+        to = emailconfirmation.email_address.user.email
 
-            if signup:
-                email_template = 'account/email/email_confirmation_signup_message.txt'
-            else:
-                email_template = 'account/email/email_confirmation_message.txt'
-
-            text_message = render_to_string(
-                email_template, ctx
-            )
-            ctx = {
-                "user": emailconfirmation.email_address.user,
-                "user_display": emailconfirmation.email_address.user.username,
-                "content": text_message,
-            }
-            templ = TemplaterrTemplate.objects.get(
-                pk=customeremailtemplate.email_template.pk
-            )
-            django_engine = engines["django"]
-            email_template = django_engine.from_string(
-                templ.html
-            ).render(ctx)
-
-            client = boto3.client("ses", region_name="eu-west-1")
-            subject = _('Bitte Ihre E-Mail-Adresse best\xc3\xa4tigen.')
-
-            try:
-                from django.db import connection
-                from origin.models import Origin
-
-                origin = Origin.objects.get(schema_name=connection.schema_name)
-                if origin.no_reply_email == "hello@supratixmail.com":
-                    from_email = "" + str(origin.schema_name) + "@supratixmail.com"
-                else:
-                    from_email = origin.no_reply_email
-            except:
-                from_email = settings.DEFAULT_FROM_EMAIL
-
-            to = emailconfirmation.email_address.user.email
-            client.send_email(
-                Source=from_email,
-                Destination={"ToAddresses": [to]},
-                Message={
-                    "Subject": {"Data": str(subject), "Charset": "UTF-8"},
-                    "Body": {
-                        "Text": {
-                            "Data": str(text_message),
-                            "Charset": "UTF-8",
-                        },
-                        "Html": {"Data": email_template, "Charset": "UTF-8"},
-                    },
-                },
-            )
-
+        if signup:
+            text_template_path = 'account/email/email_confirmation_signup_message.txt'
         else:
-            if signup:
-                email_template = 'account/email/email_confirmation_signup'
-            else:
-                email_template = 'account/email/email_confirmation'
+            text_template_path = 'account/email/email_confirmation_message.txt'
 
-            self.send_mail(email_template,
-                           emailconfirmation.email_address.email,
-                           ctx)
+        send_supramail(subject, to, None, None, text_template_path, ctx)
+
+        # self.send_mail(email_template,
+        #                emailconfirmation.email_address.email,
+        #                ctx)
 
     def respond_user_inactive(self, request, user):
         return HttpResponseRedirect(
