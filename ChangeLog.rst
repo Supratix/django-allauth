@@ -1,3 +1,72 @@
+0.45.0 (2021-07-11)
+*******************
+
+
+Note worthy changes
+-------------------
+
+- New providers: Feishu, NetIQ, Frontier, CILogin.
+
+
+0.44.0 (2020-11-25)
+*******************
+
+Security notice
+---------------
+
+In previous versions, the mechanism to prevent too many failed login attempts
+(``ACCOUNT_LOGIN_ATTEMPTS_LIMIT``) could be bypassed by changing the casing of
+the login.
+
+
+Backwards incompatible changes
+------------------------------
+
+- The ``certificate`` key part of the ``SOCIALACCOUNT_PROVIDERS`` configuration has
+  been renamed to ``certificate_key``. This is done to prevent the key from being displayed
+  without being masked in Django debug pages.
+
+0.44.0
+******
+
+- Better compatibility with Django 3.2
+
+
+0.43.0 (2020-10-15)
+*******************
+
+Note worthy changes
+-------------------
+
+- New translation: Slovenian.
+
+- If ``ACCOUNT_LOGIN_ATTEMPTS_LIMIT`` is set and the user successfully
+  resets their password, the timeout is cleared to allow immediate login.
+
+- You can now limit the amount of email addresses a user can associate to his
+  account by setting ``ACCOUNT_MAX_EMAIL_ADDRESSES``.
+
+- New providers: Apple, Okta, Stocktwits, Zoho, Zoom.
+
+- If email verification is set to mandatory, the email address you use to login
+  with must now be verified as well. In previous versions, it was sufficient if
+  the account had at least one verified email address, not necessarily the one
+  used to login with.
+
+- Added a new setting: ``ACCOUNT_SIGNUP_REDIRECT_URL`` -- the URL (or URL
+  name) to redirect to directly after signing up.
+
+
+Backwards incompatible changes
+------------------------------
+
+- In previous versions, the ``allauth`` app included a ``base.html``
+  template. This template could conflict with an equally named template at
+  project level. Therefore, ``base.html`` has now been moved to
+  ``account/base.html`` -- you will need to check your templates and likely
+  override ``account/base.html`` within your project.
+
+
 0.42.0 (2020-05-24)
 *******************
 

@@ -89,6 +89,15 @@ ACCOUNT_EMAIL_MAX_LENGTH(=254)
   3-byte and 4-byte Unicode character sets
   <https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-conversion.html>`_.
 
+ACCOUNT_MAX_EMAIL_ADDRESSES(=None)
+  The maximum amount of email addresses a user can associate to his account. It
+  is safe to change this setting for an already running project -- it will not
+  negatively affect users that already exceed the allowed amount. Note that if
+  you set the maximum to 1, users will not be able to change their email address
+  as they are unable to add the new address, followed by removing the old
+  address.
+
+
 ACCOUNT_FORMS (={})
   Used to override forms, for example:
   ``{'login': 'myapp.forms.LoginForm'}``
@@ -176,6 +185,14 @@ ACCOUNT_SIGNUP_FORM_CLASS (=None)
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE (=True)
   When signing up, let the user type in their password twice to avoid typos.
 
+ACCOUNT_SIGNUP_REDIRECT_URL (=``settings.LOGIN_REDIRECT_URL``)
+  The URL (or URL name) to redirect to directly after signing up. Note that
+  users are only redirected to this URL if the signup went through
+  uninterruptedly, for example, without any side steps due to email
+  verification. If your project requires the user to always pass through certain
+  onboarding views after signup, you will have to keep track of state indicating
+  whether or not the user successfully onboarded, and handle accordingly.
+
 ACCOUNT_TEMPLATE_EXTENSION (="html")
   A string defining the template extension to use, defaults to ``html``.
 
@@ -251,6 +268,42 @@ SOCIALACCOUNT_FORMS (={})
 
 SOCIALACCOUNT_PROVIDERS (= dict)
   Dictionary containing provider specific settings.
+
+  The 'APP' section for each provider is generic to all providers and
+  can also be specified in the database using a ``SocialApp`` model
+  instance instead of here. All other sections are provider-specific and
+  are documented in the `for each provider separately
+  <providers.html>`__.
+
+  Example::
+
+    SOCIALACCOUNT_PROVIDERS = {
+        "github": {
+            # For each provider, you can choose whether or not the
+            # email address(es) retrieved from the provider are to be
+            # interpreted as verified.
+            "VERIFIED_EMAIL": True
+        },
+        "google": {
+            # For each OAuth based provider, either add a ``SocialApp``
+            # (``socialaccount`` app) containing the required client
+            # credentials, or list them here:
+            "APP": {
+                "client_id": "123",
+                "secret": "456",
+                "key": ""
+            },
+            # These are provider-specific settings that can only be
+            # listed here:
+            "SCOPE": [
+                "profile",
+                "email",
+            ],
+            "AUTH_PARAMS": {
+                "access_type": "online",
+            }
+        }
+    }
 
 SOCIALACCOUNT_QUERY_EMAIL (=ACCOUNT_EMAIL_REQUIRED)
   Request e-mail address from 3rd party account provider? E.g. using
