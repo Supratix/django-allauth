@@ -16,15 +16,18 @@ from allauth.socialaccount.helpers import (
 )
 from allauth.socialaccount.models import SocialLogin, SocialToken
 from allauth.socialaccount.providers.base import ProviderException
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client, OAuth2Error
+from allauth.socialaccount.providers.oauth2.client import (
+    OAuth2Client,
+    OAuth2Error,
+)
 from allauth.utils import build_absolute_uri, get_request_param
 
 from ..base import AuthAction, AuthError
 
 
 class OAuth2Adapter(object):
-    client_cls = OAuth2Client
     expires_in_key = "expires_in"
+    client_class = OAuth2Client
     supports_state = True
     redirect_uri_protocol = None
     access_token_method = "POST"
@@ -63,9 +66,7 @@ class OAuth2Adapter(object):
         return client.get_access_token(code)
 
 
-
 class OAuth2View(object):
-
     @classmethod
     def adapter_view(cls, adapter):
         def view(request, *args, **kwargs):
@@ -83,7 +84,7 @@ class OAuth2View(object):
         callback_url = self.adapter.get_callback_url(request, app)
         provider = self.adapter.get_provider()
         scope = provider.get_scope(request)
-        client = self.adapter.client_cls(
+        client = self.adapter.client_class(
             self.request,
             app.client_id,
             app.secret,
@@ -91,8 +92,6 @@ class OAuth2View(object):
             self.adapter.access_token_url,
             callback_url,
             scope,
-            key=app.key,
-            cert=app.cert,
             scope_delimiter=self.adapter.scope_delimiter,
             headers=self.adapter.headers,
             basic_auth=self.adapter.basic_auth,
@@ -105,60 +104,47 @@ class OAuth2LoginView(OAuth2View):
         provider = self.adapter.get_provider()
         app = provider.get_app(self.request)
         client = self.get_client(request, app)
-        action = request.GET.get('action', AuthAction.AUTHENTICATE)
+        action = request.GET.get("action", AuthAction.AUTHENTICATE)
         auth_url = self.adapter.authorize_url
         auth_params = provider.get_auth_params(request, action)
         client.state = SocialLogin.stash_state(request)
         try:
-            return HttpResponseRedirect(client.get_redirect_url(
-                auth_url, auth_params))
+            return HttpResponseRedirect(client.get_redirect_url(auth_url, auth_params))
         except OAuth2Error as e:
-            return render_authentication_error(
-                request,
-                provider.id,
-                exception=e)
+            return render_authentication_error(request, provider.id, exception=e)
 
 
 class OAuth2CallbackView(OAuth2View):
-
     def dispatch(self, request, *args, **kwargs):
-        auth_error = get_request_param(request, "error")
-        code = get_request_param(request, "code")
-        if auth_error or not code:
+        if "error" in request.GET or "code" not in request.GET:
             # Distinguish cancel from error
+            auth_error = request.GET.get("error", None)
             if auth_error == self.adapter.login_cancelled_error:
                 error = AuthError.CANCELLED
             else:
                 error = AuthError.UNKNOWN
             return render_authentication_error(
-                request,
-                self.adapter.provider_id,
-                error=error)
-
+                request, self.adapter.provider_id, error=error
+            )
         app = self.adapter.get_provider().get_app(self.request)
         client = self.get_client(self.request, app)
 
         try:
-            token_data = self.adapter.get_access_token_data(
-                self.request, app=app, client=client
-            )
-            token = self.adapter.parse_token(data=token_data)
+            access_token = self.adapter.get_access_token_data(request, app, client)
+            token = self.adapter.parse_token(access_token)
             token.app = app
-
             login = self.adapter.complete_login(
-                request, app, token, response=token_data
+                request, app, token, response=access_token
             )
             login.token = token
-
-            state = get_request_param(request, "state")
-
             if self.adapter.supports_state:
-                login.state = SocialLogin.verify_and_unstash_state(request, state)
+                login.state = SocialLogin.verify_and_unstash_state(
+                    request, get_request_param(request, "state")
+                )
             else:
                 login.state = SocialLogin.unstash_state(request)
 
             return complete_social_login(request, login)
-
         except (
             PermissionDenied,
             OAuth2Error,
