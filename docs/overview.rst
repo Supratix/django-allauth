@@ -4,7 +4,7 @@ Overview
 Requirements
 ------------
 
-- Python 3.5, 3.6, 3.7 or 3.8
+- Python 3.5, 3.6, 3.7, 3.8 or 3.9
 
 - Django (2.0+)
 
@@ -45,7 +45,7 @@ Supported Providers
 
 - AngelList (OAuth2)
 
-- Apple (OAuth2)
+- Apple ("OAuth2")
 
 - Asana (OAuth2)
 
@@ -55,9 +55,9 @@ Supported Providers
 
 - Azure (OAuth2)
 
-- Basecamp (OAuth2)
-
 - Baidu (OAuth2)
+
+- Basecamp (OAuth2)
 
 - Battle.net (OAuth2)
 
@@ -69,15 +69,25 @@ Supported Providers
 
 - CERN (OAuth2)
 
+- CILogon (OAuth2)
+
+- Coinbase (OAuth2)
+
 - Dataporten (OAuth2)
 
 - Daum (OAuth2)
 
-- Douban (OAuth2)
+- Digital Ocean (OAuth2)
+
+- Discord (OAuth2)
 
 - Disqus (OAuth2)
 
+- Douban (OAuth2)
+
 - Doximity (OAuth2)
+
+- Draugiem
 
 - Dropbox (OAuth, OAuth2)
 
@@ -99,9 +109,15 @@ Supported Providers
 
 - Feedly (OAuth2)
 
+- Figma (OAuth2)
+
 - Firefox Accounts (OAuth2)
 
 - Flickr (OAuth)
+
+- FourSquare (OAuth2)
+
+- Frontier (OAuth2)
 
 - Github (OAuth2)
 
@@ -133,13 +149,15 @@ Supported Providers
 
 - Microsoft (Graph) (OAuth2)
 
-- Mixer (OAuth2)
+- Naver (OAuth2)
+
+- NetIQ/Microfocus AccessManager (OAuth2)
 
 - NextCloud (OAuth2)
 
-- Naver (OAuth2)
-
 - Odnoklassniki (OAuth2)
+
+- Okta (OAuth2)
 
 - OpenId
 
@@ -159,6 +177,8 @@ Supported Providers
 
 - Reddit (OAuth2)
 
+- Robinhood (OAuth2)
+
 - Salesforce (OAuth2)
 
 - ShareFile (OAuth2)
@@ -175,11 +195,15 @@ Supported Providers
 
 - Steam (OpenID)
 
+- Stocktwits (OAuth2)
+
 - Strava (OAuth2)
 
 - Stripe (OAuth2)
 
 - Telegram
+
+- TrainingPeaks (OAuth2)
 
 - Trello (OAuth)
 
@@ -208,6 +232,12 @@ Supported Providers
 - Yandex (OAuth2)
 
 - YNAB (OAuth2)
+
+- Zoho (Oauth2)
+
+- Zoom (OAuth2)
+
+- Feishu (OAuth2)
 
 
 Note: OAuth/OAuth2 support is built using a common code base, making it easy to add support for additional OAuth/OAuth2 providers. More will follow soon...
