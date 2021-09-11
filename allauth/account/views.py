@@ -1,7 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import never_cache
-
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import (
     Http404,
@@ -411,7 +409,7 @@ confirm_email = ConfirmEmailView.as_view()
 class EmailView(AjaxCapableProcessFormViewMixin, FormView):
     template_name = "account/email." + app_settings.TEMPLATE_EXTENSION
     form_class = AddEmailForm
-    success_url = reverse_lazy("account_email")
+    success_url = reverse_lazy("userprofile:account_esettings")
 
     def get_form_class(self):
         return get_form_class(app_settings.FORMS, "add_email", self.form_class)
@@ -578,7 +576,7 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
         return data
 
 
-email = login_required(never_cache(EmailView.as_view()))
+email = login_required(EmailView.as_view())
 
 
 class PasswordChangeView(AjaxCapableProcessFormViewMixin, FormView):

@@ -15,7 +15,7 @@ urlpatterns = [
     path("password/set/", views.password_set, name="account_set_password"),
     path("inactive/", views.account_inactive, name="account_inactive"),
     # E-mail
-    path("email/", never_cache(views.email, name="account_email")),
+    path("email/", views.email, name="account_email"),
     path(
         "confirm-email/",
         views.email_verification_sent,
