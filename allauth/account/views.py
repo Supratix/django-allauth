@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import (
     Http404,
@@ -576,7 +578,7 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
         return data
 
 
-email = login_required(EmailView.as_view())
+email = login_required(never_cache(EmailView.as_view()))
 
 
 class PasswordChangeView(AjaxCapableProcessFormViewMixin, FormView):
