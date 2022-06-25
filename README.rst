@@ -2,8 +2,8 @@
 Welcome to django-allauth!
 ==========================
 
-.. image:: https://api.travis-ci.com/pennersr/django-allauth.svg?branch=master
-   :target: http://travis-ci.com/pennersr/django-allauth
+.. image:: https://github.com/pennersr/django-allauth/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/pennersr/django-allauth/actions
 
 .. image:: https://img.shields.io/pypi/v/django-allauth.svg
    :target: https://pypi.python.org/pypi/django-allauth
@@ -14,6 +14,9 @@ Welcome to django-allauth!
 
 .. image:: https://pennersr.github.io/img/bitcoin-badge.svg
    :target: https://blockchain.info/address/1AJXuBMPHkaDCNX2rwAy34bGgs7hmrePEr
+
+.. image:: https://badgen.net/liberapay/receives/pennersr
+   :target: https://en.liberapay.com/pennersr
 
 .. image:: https://img.shields.io/badge/code%20style-pep8-green.svg
    :target: https://www.python.org/dev/peps/pep-0008/
@@ -83,3 +86,4 @@ If you like this, you may also like:
 
 - django-trackstats: https://github.com/pennersr/django-trackstats
 - netwell: https://github.com/pennersr/netwell
+- Shove: https://github.com/pennersr/shove

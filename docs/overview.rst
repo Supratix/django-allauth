@@ -4,7 +4,7 @@ Overview
 Requirements
 ------------
 
-- Python 3.5, 3.6, 3.7, 3.8 or 3.9
+- Python 3.5, 3.6, 3.7, 3.8, 3.9, or 3.10
 
 - Django (2.0+)
 
@@ -71,6 +71,8 @@ Supported Providers
 
 - CILogon (OAuth2)
 
+- Clever (OAuth2)
+
 - Coinbase (OAuth2)
 
 - Dataporten (OAuth2)
@@ -88,6 +90,8 @@ Supported Providers
 - Doximity (OAuth2)
 
 - Draugiem
+
+- Drip
 
 - Dropbox (OAuth, OAuth2)
 
@@ -119,6 +123,8 @@ Supported Providers
 
 - Frontier (OAuth2)
 
+- Gitea (OAuth2)
+
 - Github (OAuth2)
 
 - GitLab (OAuth2)
@@ -127,7 +133,11 @@ Supported Providers
 
 - Google (OAuth2)
 
+- Gumroad (OAuth2)
+
 - Hubic (OAuth2)
+
+- Hubspot (OAuth2)
 
 - Instagram (OAuth2)
 
@@ -137,6 +147,8 @@ Supported Providers
 
 - Keycloak (OAuth2)
 
+- LemonLDAP::NG (OAuth2)
+
 - Line (OAuth2)
 
 - LinkedIn (OAuth, OAuth2)
@@ -144,6 +156,8 @@ Supported Providers
 - Mail.Ru (OAuth2)
 
 - MailChimp (OAuth2)
+
+- MediaWiki (OAuth2)
 
 - Meetup (OAuth2)
 
@@ -173,6 +187,8 @@ Supported Providers
 
 - Pinterest (OAuth2)
 
+- Pocket (OAuth)
+
 - QuickBooks (OAuth2)
 
 - Reddit (OAuth2)
@@ -186,6 +202,8 @@ Supported Providers
 - Shopify (OAuth2)
 
 - Slack (OAuth2)
+
+- Snapchat (OAuth2)
 
 - SoundCloud (OAuth2)
 

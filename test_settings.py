@@ -1,5 +1,10 @@
+import os
+
+
 SECRET_KEY = "psst"
 SITE_ID = 1
+ALLOWED_HOSTS = ("*",)
+USE_I18N = False
 
 DATABASES = {
     "default": {
@@ -17,7 +22,7 @@ ROOT_URLCONF = "allauth.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(os.path.dirname(__file__), "example", "example", "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -77,6 +82,7 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.douban",
     "allauth.socialaccount.providers.doximity",
     "allauth.socialaccount.providers.draugiem",
+    "allauth.socialaccount.providers.drip",
     "allauth.socialaccount.providers.dropbox",
     "allauth.socialaccount.providers.dwolla",
     "allauth.socialaccount.providers.edmodo",
@@ -93,20 +99,25 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.foursquare",
     "allauth.socialaccount.providers.frontier",
     "allauth.socialaccount.providers.fxa",
+    "allauth.socialaccount.providers.gitea",
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.gitlab",
     "allauth.socialaccount.providers.globus",
     "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.gumroad",
     "allauth.socialaccount.providers.hubic",
+    'allauth.socialaccount.providers.hubspot',
     "allauth.socialaccount.providers.instagram",
     "allauth.socialaccount.providers.jupyterhub",
     "allauth.socialaccount.providers.kakao",
     "allauth.socialaccount.providers.keycloak",
+    "allauth.socialaccount.providers.lemonldap",
     "allauth.socialaccount.providers.line",
     "allauth.socialaccount.providers.linkedin",
     "allauth.socialaccount.providers.linkedin_oauth2",
     "allauth.socialaccount.providers.mailchimp",
     "allauth.socialaccount.providers.mailru",
+    "allauth.socialaccount.providers.mediawiki",
     "allauth.socialaccount.providers.meetup",
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.naver",
@@ -120,6 +131,7 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.paypal",
     "allauth.socialaccount.providers.persona",
     "allauth.socialaccount.providers.pinterest",
+    "allauth.socialaccount.providers.pocket",
     "allauth.socialaccount.providers.quickbooks",
     "allauth.socialaccount.providers.reddit",
     "allauth.socialaccount.providers.robinhood",
@@ -127,6 +139,7 @@ INSTALLED_APPS = (
     "allauth.socialaccount.providers.sharefile",
     "allauth.socialaccount.providers.shopify",
     "allauth.socialaccount.providers.slack",
+    "allauth.socialaccount.providers.snapchat",
     "allauth.socialaccount.providers.soundcloud",
     "allauth.socialaccount.providers.spotify",
     "allauth.socialaccount.providers.stackexchange",
@@ -186,3 +199,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
+
+
+ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 0
+ACCOUNT_RATE_LIMITS = {}
