@@ -6,19 +6,19 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
-from .provider import NoaProvider
+from .provider import DfbProvider
 
 
-# {"issuer":"https://noaidentitydev.azurewebsites.net/authorization",
-#  "jwks_uri":"https://noaidentitydev.azurewebsites.net/authorization/.well-known/openid-configuration/jwks",
-#  "authorization_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/authorize",
-#  "token_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/token",
-#  "userinfo_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo",
-#  "end_session_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/endsession",
-#  "check_session_iframe":"https://noaidentitydev.azurewebsites.net/authorization/connect/checksession",
-#  "revocation_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/revocation",
-#  "introspection_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/introspect",
-#  "device_authorization_endpoint":"https://noaidentitydev.azurewebsites.net/authorization/connect/deviceauthorization",
+# {"issuer":"https://Dfbidentitydev.azurewebsites.net/authorization",
+#  "jwks_uri":"https://Dfbidentitydev.azurewebsites.net/authorization/.well-known/openid-configuration/jwks",
+#  "authorization_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/authorize",
+#  "token_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/token",
+#  "userinfo_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/userinfo",
+#  "end_session_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/endsession",
+#  "check_session_iframe":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/checksession",
+#  "revocation_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/revocation",
+#  "introspection_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/introspect",
+#  "device_authorization_endpoint":"https://Dfbidentitydev.azurewebsites.net/authorization/connect/deviceauthorization",
 #  "frontchannel_logout_supported":true,
 #  "frontchannel_logout_session_supported":true,
 #  "backchannel_logout_supported":true,
@@ -36,18 +36,18 @@ from .provider import NoaProvider
 from ..oauth2.client import OAuth2Error
 
 
-class NoaOAuth2Adapter(OAuth2Adapter):
-    provider_id = NoaProvider.id
-    access_token_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/token'
-    authorize_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/authorize'
-    profile_url = 'https://noaidentitydev.azurewebsites.net/authorization/connect/userinfo'
+class DfbOAuth2Adapter(OAuth2Adapter):
+    provider_id = DfbProvider.id
+    access_token_url = 'https://Dfbidentitydev.azurewebsites.net/authorization/connect/token'
+    authorize_url = 'https://Dfbidentitydev.azurewebsites.net/authorization/connect/authorize'
+    profile_url = 'https://Dfbidentitydev.azurewebsites.net/authorization/connect/userinfo'
 
     def complete_login(self, request, app, token, response):
         # extra_data_token = requests.post(self.access_token_url, params={
         #     'client_id': app.client_id,
         #     'grant_type': 'authorization_code',
         #     'code': token.token,
-        #     'redirect_uri': 'https://noahow.com/accounts/noa/login/callback/',
+        #     'redirect_uri': 'https://Dfbhow.com/accounts/Dfb/login/callback/',
         # })
         # public_key = (
         #     b"-----BEGIN PUBLIC KEY-----\n"
@@ -74,5 +74,5 @@ class NoaOAuth2Adapter(OAuth2Adapter):
         )
 
 
-oauth2_login = OAuth2LoginView.adapter_view(NoaOAuth2Adapter)
-oauth2_callback = OAuth2CallbackView.adapter_view(NoaOAuth2Adapter)
+oauth2_login = OAuth2LoginView.adapter_view(DfbOAuth2Adapter)
+oauth2_callback = OAuth2CallbackView.adapter_view(DfbOAuth2Adapter)

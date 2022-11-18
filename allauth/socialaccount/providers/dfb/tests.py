@@ -2,11 +2,11 @@ from allauth.socialaccount.providers import registry
 from allauth.socialaccount.tests import create_oauth2_tests
 from allauth.tests import MockedResponse
 
-from .provider import NoaProvider
+from .provider import DfbProvider
 
 
-class NoaTests(create_oauth2_tests(
-        registry.by_id(NoaProvider.id))):
+class DfbTests(create_oauth2_tests(
+        registry.by_id(DfbProvider.id))):
 
     def get_mocked_response(self):
         return MockedResponse(200, """

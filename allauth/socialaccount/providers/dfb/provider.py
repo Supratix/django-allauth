@@ -2,22 +2,22 @@ from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 
 
-class NoaAccount(ProviderAccount):
-    """Noa Account"""
+class DfbAccount(ProviderAccount):
+    """Dfb Account"""
 
     pass
 
 
-class NoaProvider(OAuth2Provider):
-    """Provider for Noa"""
+class DfbProvider(OAuth2Provider):
+    """Provider for Dfb"""
 
-    id = 'noa'
-    name = 'Noa'
-    account_class = NoaAccount
+    id = 'Dfb'
+    name = 'Dfb'
+    account_class = DfbAccount
 
     def extract_uid(self, data):
 
         return str(data['preferred_username'])
 
 
-provider_classes = [NoaProvider]
+provider_classes = [DfbProvider]
