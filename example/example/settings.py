@@ -1,8 +1,9 @@
 # Django settings for example project.
 import os
+from pathlib import Path
 
 
-PROJECT_ROOT = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = True
 
@@ -19,7 +20,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",  # Add 'postgresql_psycopg2', 'postgresql',
         # 'mysql', 'sqlite3' or 'oracle'.
         "NAME": os.path.join(
-            PROJECT_ROOT, "example.db"
+            BASE_DIR / "example" / "example.db"
         ),  # Or path to database file if using sqlite3.
         "USER": "",  # Not used with sqlite3.
         "PASSWORD": "",  # Not used with sqlite3.
@@ -50,9 +51,6 @@ USE_I18N = True
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
 USE_L10N = True
-
-LOCALE_PATHS = (os.path.join(PROJECT_ROOT, "locale"),)
-
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -96,7 +94,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(PROJECT_ROOT, "templates"),
+            BASE_DIR / "example" / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -116,6 +114,7 @@ MIDDLEWARE = (
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 )
 
 AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
@@ -126,6 +125,7 @@ INSTALLED_APPS = (
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.humanize",
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -133,31 +133,36 @@ INSTALLED_APPS = (
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.mfa",
     "allauth.socialaccount.providers.dropbox",
-    "allauth.socialaccount.providers.azure",
+    "allauth.socialaccount.providers.dingtalk",
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.edx",
     "allauth.socialaccount.providers.evernote",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
-    "allauth.socialaccount.providers.linkedin",
+    "allauth.socialaccount.providers.linkedin_oauth2",
     "allauth.socialaccount.providers.mediawiki",
     "allauth.socialaccount.providers.openid",
+    "allauth.socialaccount.providers.openid_connect",
+    "allauth.socialaccount.providers.pinterest",
     "allauth.socialaccount.providers.pocket",
-    "allauth.socialaccount.providers.persona",
     "allauth.socialaccount.providers.reddit",
+    "allauth.socialaccount.providers.saml",
     "allauth.socialaccount.providers.shopify",
     "allauth.socialaccount.providers.slack",
-    'allauth.socialaccount.providers.snapchat',
+    "allauth.socialaccount.providers.snapchat",
     "allauth.socialaccount.providers.soundcloud",
     "allauth.socialaccount.providers.stackexchange",
     "allauth.socialaccount.providers.telegram",
     "allauth.socialaccount.providers.twitch",
     "allauth.socialaccount.providers.twitter",
+    "allauth.socialaccount.providers.twitter_oauth2",
     "allauth.socialaccount.providers.vimeo",
     "allauth.socialaccount.providers.vimeo_oauth2",
     "allauth.socialaccount.providers.weibo",
     "allauth.socialaccount.providers.xing",
+    "allauth.usersessions",
     "example.demo",
 )
 
@@ -172,7 +177,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 try:
     from .local_settings import *  # noqa
 except ImportError:
