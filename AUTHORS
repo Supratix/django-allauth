@@ -3,20 +3,18 @@ django-allauth was started by Raymond Penners
 by and partly based on existing projects such as Pinax (account app),
 Django-Socialauth, django-socialregistration.
 
-# Contributors
+Contributors
+============
 
 Aaron van Derlip
 Abhinav Johri
 Abhishek Kumar Jaiswal
-Adam Johnson
 Adam McKerlie
 Agustin Perez Paladini
 Ahmet Emre Aladağ
-Aiden Lu
 Aldiantoro Nugroho
 Alexander Gaevsky
 Andrean Franc
-Andrei Satsevich
 Andrew Chen Wang
 Andrey Akolpakov
 Andrey Balandin
@@ -55,25 +53,20 @@ Eric Amador
 Eric Delord
 Fabio Caritas Barrionuevo da Luz
 Facundo Gaich
-Filip Dobrovolný
 Francis Brito
 Frantisek Malina
 Fred Palmer
 Fábio Santos
-Felipe Faria
 George Whewell
 Griffith Rees
 Guignard Javier
 Guilhem Saurel
-Guillaume Schurck
 Guillaume Vincent
 Guoyu Hao
 Haesung Park
 Hatem Nassrat
 Hyunwoo Shim
-Ian R-P
 Ignacio Ocampo
-Illia Volochii
 J. Erm
 J. Fernando Sánchez
 Jack Shedd
@@ -82,7 +75,6 @@ James Rivett-Carnac
 James Thompson
 Jannis Leidel
 Jannis Vajen
-Jason Wallace
 Jeff Bowen
 Jeff Triplett
 Jeremy Satterfield
@@ -107,9 +99,7 @@ Karthikeyan Singaravelan
 Karun Shrestha
 Kevin Dice
 Koichi Harakawa
-Kun Liu
 Kyle Harrison
-Kimsia Sim
 Lee Semel
 Lev Predan Kowarski
 Luis Diego García
@@ -136,7 +126,6 @@ Oleg Sergeev
 Patrick Paul
 Paul Juergen Fischer
 Paulo Eduardo Neves
-Pavel Oborin
 Pavel Savchenko
 Peter Bittner
 Peter Rowlands
@@ -160,7 +149,6 @@ Seizan Shimazaki
 Serafeim Papastefanos
 Sergey Silaev
 Shane Rice
-Stephen Kent
 Stuart Ross
 Terry Jones
 Tiago Loureiro
@@ -182,4 +170,3 @@ William Li
 Yaroslav Muravsky
 Yuri Kriachko
 Youcef Mammar
-Anton Goncharov

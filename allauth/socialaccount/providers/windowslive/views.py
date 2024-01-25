@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
-from allauth.socialaccount.adapter import get_adapter
+import requests
+
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
     OAuth2CallbackView,
@@ -18,11 +19,9 @@ class WindowsLiveOAuth2Adapter(OAuth2Adapter):
 
     def complete_login(self, request, app, token, **kwargs):
         headers = {"Authorization": "Bearer {0}".format(token.token)}
-        resp = (
-            get_adapter().get_requests_session().get(self.profile_url, headers=headers)
-        )
+        resp = requests.get(self.profile_url, headers=headers)
 
-        # example of what's returned (in python format):
+        # example of whats returned (in python format):
         # {'first_name': 'James', 'last_name': 'Smith',
         #  'name': 'James Smith', 'locale': 'en_US', 'gender': None,
         #  'emails': {'personal': None, 'account': 'jsmith@example.com',

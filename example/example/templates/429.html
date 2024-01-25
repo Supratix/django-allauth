@@ -1,11 +1,7 @@
-{% extends "allauth/layouts/entrance.html" %}
-{% load allauth %}
-{% block head_title %}
-    Too Many Requests
-{% endblock head_title %}
+{% extends "base.html" %}
+
 {% block content %}
-    {% element h1 %}
-        Too Many Requests
-    {% endelement %}
-    <p>You are sending too many requests.</p>
-{% endblock content %}
+<h1>Too Many Requests</h1>
+
+<p>You are sending too many requests.</p>
+{% endblock %}
