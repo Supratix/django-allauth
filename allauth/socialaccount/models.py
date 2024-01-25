@@ -15,7 +15,7 @@ from allauth.utils import get_user_model
 from ..utils import get_request_param
 from . import app_settings, providers
 from .adapter import get_adapter
-from .fields import JSONField
+
 
 
 class SocialAppManager(models.Manager):
@@ -56,7 +56,7 @@ class SocialApp(models.Model):
     key = models.CharField(
         verbose_name=_("key"), max_length=191, blank=True, help_text=_("Key")
     )
-    settings = models.TextField()
+    settings = models.TextField(blank=True, help_text=_("Settings"))
 
     if allauth.app_settings.SITES_ENABLED:
         # Most apps can be used across multiple domains, therefore we use
@@ -105,7 +105,7 @@ class SocialAccount(models.Model):
     )
     last_login = models.DateTimeField(verbose_name=_("last login"), auto_now=True)
     date_joined = models.DateTimeField(verbose_name=_("date joined"), auto_now_add=True)
-    extra_data = JSONField(verbose_name=_("extra data"), default=dict)
+    extra_data = models.TextField(verbose_name=_("extra data"), blank=True)
 
     class Meta:
         unique_together = ("provider", "uid")
