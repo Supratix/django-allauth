@@ -8,10 +8,9 @@ import unicodedata
 from collections import OrderedDict
 from urllib.parse import urlsplit
 
-from django.conf import settings
+import django
 from django.contrib.auth import get_user_model
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
-from django.core.files.base import ContentFile
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import ValidationError, validate_email
 from django.db.models import FileField
@@ -48,10 +47,10 @@ def _generate_unique_username_base(txts, regex=None):
         username = unicodedata.normalize("NFKD", force_str(txt))
         username = username.encode("ascii", "ignore").decode("ascii")
         username = force_str(re.sub(regex, "", username).lower())
-        # Django allows for '@' in usernames in order to accommodate for
-        # project wanting to use email for username. In allauth we don't
-        # use this, we already have a proper place for putting email
-        # addresses (EmailAddress), so let's not use the full email
+        # Django allows for '@' in usernames in order to accomodate for
+        # project wanting to use e-mail for username. In allauth we don't
+        # use this, we already have a proper place for putting e-mail
+        # addresses (EmailAddress), so let's not use the full e-mail
         # address and only take the part leading up to the '@'.
         username = username.split("@")[0]
         username = username.strip()
@@ -133,6 +132,24 @@ def valid_email_or_none(email):
     return ret
 
 
+def email_address_exists(email, exclude_user=None):
+    from .account import app_settings as account_settings
+    from .account.models import EmailAddress
+
+    emailaddresses = EmailAddress.objects
+    if exclude_user:
+        emailaddresses = emailaddresses.exclude(user=exclude_user)
+    ret = emailaddresses.filter(email__iexact=email).exists()
+    if not ret:
+        email_field = account_settings.USER_MODEL_EMAIL_FIELD
+        if email_field:
+            users = get_user_model().objects
+            if exclude_user:
+                users = users.exclude(pk=exclude_user.pk)
+            ret = users.filter(**{email_field + "__iexact": email}).exists()
+    return ret
+
+
 def import_attribute(path):
     assert isinstance(path, str)
     pkg, attr = path.rsplit(".", 1)
@@ -169,10 +186,7 @@ def serialize_instance(instance):
                 v = force_str(base64.b64encode(v))
             elif isinstance(field, FileField):
                 if v and not isinstance(v, str):
-                    v = {
-                        "name": v.name,
-                        "content": base64.b64encode(v.read()).decode("ascii"),
-                    }
+                    v = v.name
             # Check if the field is serializable. If not, we'll fall back
             # to serializing the DB values which should cover most use cases.
             try:
@@ -204,16 +218,16 @@ def deserialize_instance(model, data):
                     v = dateparse.parse_date(v)
                 elif isinstance(f, BinaryField):
                     v = force_bytes(base64.b64decode(force_bytes(v)))
-                elif isinstance(f, FileField):
-                    if isinstance(v, dict):
-                        v = ContentFile(base64.b64decode(v["content"]), name=v["name"])
                 elif is_db_value:
                     try:
                         # This is quite an ugly hack, but will cover most
                         # use cases...
                         # The signature of `from_db_value` changed in Django 3
                         # https://docs.djangoproject.com/en/3.0/releases/3.0/#features-removed-in-3-0
-                        v = f.from_db_value(v, None, None)
+                        if django.VERSION < (3, 0):
+                            v = f.from_db_value(v, None, None, None)
+                        else:
+                            v = f.from_db_value(v, None, None)
                     except Exception:
                         raise ImproperlyConfigured(
                             "Unable to auto serialize field '{}', custom"
@@ -302,13 +316,3 @@ def get_request_param(request, param, default=None):
     if request is None:
         return default
     return request.POST.get(param) or request.GET.get(param, default)
-
-
-def get_setting(name, dflt):
-    getter = getattr(
-        settings,
-        "ALLAUTH_SETTING_GETTER",
-        lambda name, dflt: getattr(settings, name, dflt),
-    )
-    getter = import_callable(getter)
-    return getter(name, dflt)

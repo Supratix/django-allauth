@@ -5,6 +5,7 @@ Inspired by:
     http://github.com/facebook/tornado/blob/master/tornado/auth.py
 """
 
+import requests
 from urllib.parse import parse_qsl, urlparse
 
 from django.http import HttpResponseRedirect
@@ -13,7 +14,6 @@ from django.utils.translation import gettext as _
 
 from requests_oauthlib import OAuth1
 
-from allauth.socialaccount.adapter import get_adapter
 from allauth.utils import build_absolute_uri, get_request_param
 
 
@@ -47,6 +47,7 @@ class OAuthClient(object):
         parameters=None,
         provider=None,
     ):
+
         self.request = request
 
         self.request_token_url = request_token_url
@@ -78,14 +79,11 @@ class OAuthClient(object):
             )
             rt_url = self.request_token_url + "?" + urlencode(get_params)
             oauth = OAuth1(self.consumer_key, client_secret=self.consumer_secret)
-            response = get_adapter().get_requests_session().post(url=rt_url, auth=oauth)
+            response = requests.post(url=rt_url, auth=oauth)
             if response.status_code not in [200, 201]:
                 raise OAuthError(
-                    _(
-                        "Invalid response while obtaining request token"
-                        ' from "%s". Response was: %s.'
-                    )
-                    % (get_token_prefix(self.request_token_url), response.text)
+                    _("Invalid response while obtaining request token" ' from "%s".')
+                    % get_token_prefix(self.request_token_url)
                 )
             self.request_token = dict(parse_qsl(response.text))
             self.request.session[
@@ -113,7 +111,7 @@ class OAuthClient(object):
             oauth_verifier = get_request_param(self.request, "oauth_verifier")
             if oauth_verifier:
                 at_url = at_url + "?" + urlencode({"oauth_verifier": oauth_verifier})
-            response = get_adapter().get_requests_session().post(url=at_url, auth=oauth)
+            response = requests.post(url=at_url, auth=oauth)
             if response.status_code not in [200, 201]:
                 raise OAuthError(
                     _("Invalid response while obtaining access token" ' from "%s".')
@@ -204,7 +202,7 @@ class OAuth(object):
             resource_owner_key=access_token["oauth_token"],
             resource_owner_secret=access_token["oauth_token_secret"],
         )
-        response = getattr(get_adapter().get_requests_session(), method.lower())(
+        response = getattr(requests, method.lower())(
             url, auth=oauth, headers=headers, params=params
         )
         if response.status_code != 200:

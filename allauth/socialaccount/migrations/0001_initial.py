@@ -4,20 +4,23 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 
+import allauth.socialaccount.fields
 from allauth import app_settings
 from allauth.socialaccount.providers import registry
 
 
 class Migration(migrations.Migration):
+
     dependencies = (
         [
             ("sites", "0001_initial"),
         ]
         if app_settings.SITES_ENABLED
         else []
-    ) + [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-    ]
+        + [
+            migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ]
+    )
 
     operations = [
         migrations.CreateModel(
@@ -59,7 +62,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "extra_data",
-                    models.TextField(default="{}", verbose_name="extra data"),
+                    allauth.socialaccount.fields.JSONField(
+                        default="{}", verbose_name="extra data"
+                    ),
                 ),
                 (
                     "user",

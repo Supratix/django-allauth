@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import json
+import requests
 from collections import OrderedDict
 
 from django.utils.http import urlencode
 
-from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth2.client import (
     OAuth2Client,
     OAuth2Error,
@@ -13,6 +13,7 @@ from allauth.socialaccount.providers.oauth2.client import (
 
 
 class FeishuOAuth2Client(OAuth2Client):
+
     app_access_token_url = (
         "https://open.feishu.cn/open-apis/auth/v3/app_access_token/internal/"
     )
@@ -42,14 +43,14 @@ class FeishuOAuth2Client(OAuth2Client):
         url = self.app_access_token_url
 
         # TODO: Proper exception handling
-        resp = get_adapter().get_requests_session().request("POST", url, data=data)
+        resp = requests.request("POST", url, data=data)
         resp.raise_for_status()
         access_token = resp.json()
         if not access_token or "app_access_token" not in access_token:
             raise OAuth2Error("Error retrieving app access token: %s" % resp.content)
         return access_token["app_access_token"]
 
-    def get_access_token(self, code, pkce_code_verifier=None):
+    def get_access_token(self, code):
         data = {
             "grant_type": "authorization_code",
             "code": code,
@@ -61,19 +62,13 @@ class FeishuOAuth2Client(OAuth2Client):
         if self.access_token_method == "GET":
             params = data
             data = None
-        if data and pkce_code_verifier:
-            data["code_verifier"] = pkce_code_verifier
         # TODO: Proper exception handling
-        resp = (
-            get_adapter()
-            .get_requests_session()
-            .request(
-                self.access_token_method,
-                url,
-                params=params,
-                data=json.dumps(data),
-                headers={"Content-Type": "application/json"},
-            )
+        resp = requests.request(
+            self.access_token_method,
+            url,
+            params=params,
+            data=json.dumps(data),
+            headers={"Content-Type": "application/json"},
         )
         resp.raise_for_status()
         access_token = resp.json()

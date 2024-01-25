@@ -3,8 +3,11 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+import allauth.socialaccount.fields
+
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("socialaccount", "0002_token_max_lengths"),
     ]
@@ -13,7 +16,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="socialaccount",
             name="extra_data",
-            field=models.TextField(default="{}", verbose_name="extra data"),
+            field=allauth.socialaccount.fields.JSONField(
+                default=dict, verbose_name="extra data"
+            ),
             preserve_default=True,
         ),
     ]

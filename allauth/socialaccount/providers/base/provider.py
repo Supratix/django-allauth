@@ -1,5 +1,4 @@
-from django.core.exceptions import ImproperlyConfigured
-
+from allauth.account.models import EmailAddress
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import get_adapter
 
@@ -9,17 +8,11 @@ class ProviderException(Exception):
 
 
 class Provider(object):
+
     slug = None
-    uses_apps = True
 
-    def __init__(self, request, app=None):
+    def __init__(self, request):
         self.request = request
-        if self.uses_apps and app is None:
-            raise ValueError("missing: app")
-        self.app = app
-
-    def __str__(self):
-        return self.name
 
     @classmethod
     def get_slug(cls):
@@ -31,6 +24,10 @@ class Provider(object):
         provider.
         """
         raise NotImplementedError("get_login_url() for " + self.name)
+
+    def get_app(self, request):
+        adapter = get_adapter(request)
+        return adapter.get_app(request, self.id)
 
     def media_js(self, request):
         """
@@ -61,35 +58,15 @@ class Provider(object):
         :return: A populated instance of the `SocialLogin` model (unsaved).
         """
         # NOTE: Avoid loading models at top due to registry boot...
-        from allauth.socialaccount.adapter import get_adapter
         from allauth.socialaccount.models import SocialAccount, SocialLogin
 
-        adapter = get_adapter()
+        adapter = get_adapter(request)
         uid = self.extract_uid(response)
-        if not isinstance(uid, str):
-            raise ValueError(f"uid must be a string: {repr(uid)}")
-        if len(uid) > app_settings.UID_MAX_LENGTH:
-            raise ImproperlyConfigured(
-                f"SOCIALACCOUNT_UID_MAX_LENGTH too small (<{len(uid)})"
-            )
-        if not uid:
-            raise ValueError("uid must be a non-empty string")
-
         extra_data = self.extract_extra_data(response)
         common_fields = self.extract_common_fields(response)
-        socialaccount = SocialAccount(
-            extra_data=extra_data,
-            uid=uid,
-            provider=(self.app.provider_id or self.app.provider)
-            if self.app
-            else self.id,
-        )
+        socialaccount = SocialAccount(extra_data=extra_data, uid=uid, provider=self.id)
         email_addresses = self.extract_email_addresses(response)
-        self.cleanup_email_addresses(
-            common_fields.get("email"),
-            email_addresses,
-            email_verified=common_fields.get("email_verified"),
-        )
+        self.cleanup_email_addresses(common_fields.get("email"), email_addresses)
         sociallogin = SocialLogin(
             account=socialaccount, email_addresses=email_addresses
         )
@@ -129,19 +106,15 @@ class Provider(object):
         """
         return {}
 
-    def cleanup_email_addresses(self, email, addresses, email_verified=False):
-        # Avoid loading models before adapters have been registered.
-        from allauth.account.models import EmailAddress
-
+    def cleanup_email_addresses(self, email, addresses):
         # Move user.email over to EmailAddress
         if email and email.lower() not in [a.email.lower() for a in addresses]:
-            addresses.append(
-                EmailAddress(email=email, verified=bool(email_verified), primary=True)
-            )
+            addresses.append(EmailAddress(email=email, verified=False, primary=True))
         # Force verified emails
-        adapter = get_adapter()
-        for address in addresses:
-            if adapter.is_email_verified(self, address.email):
+        settings = self.get_settings()
+        verified_email = settings.get("VERIFIED_EMAIL", False)
+        if verified_email:
+            for address in addresses:
                 address.verified = True
 
     def extract_email_addresses(self, data):
@@ -197,7 +170,7 @@ class ProviderAccount(object):
                     dflt = super(GoogleAccount, self).__str__()
                     return self.account.extra_data.get('name', dflt)
 
-        So we have this method `to_str` that can be overridden in a conventional
+        So we have this method `to_str` that can be overriden in a conventional
         fashion, without having to worry about it.
         """
         return self.get_brand()["name"]
