@@ -5,19 +5,14 @@ from pytest_django.asserts import assertTemplateUsed
 from allauth.socialaccount.models import SocialAccount
 
 
-def test_disconnect(auth_client, user, settings, mailoutbox):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
-    account = SocialAccount.objects.create(
-        uid="123", provider="other-server", user=user
-    )
+def test_disconnect(auth_client, user):
+    account = SocialAccount.objects.create(uid="123", provider="twitter", user=user)
     resp = auth_client.get(reverse("socialaccount_connections"))
     assertTemplateUsed(resp, "socialaccount/connections.html")
     resp = auth_client.post(
         reverse("socialaccount_connections"), {"account": account.pk}
     )
     assert not SocialAccount.objects.filter(pk=account.pk).exists()
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "[example.com] Third-Party Account Disconnected"
 
 
 def test_connect_with_reauthentication(
@@ -35,13 +30,10 @@ def test_connect_with_reauthentication(
 
 
 def test_connect(
-    auth_client, user, provider_callback_response, settings, user_password, mailoutbox
+    auth_client, user, provider_callback_response, settings, user_password
 ):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
     settings.ACCOUNT_REAUTHENTICATION_REQUIRED = False
     resp = provider_callback_response(auth_client, process="connect")
     assert resp.status_code == 302
     assert SocialAccount.objects.filter(user=user).exists()
     assert resp["location"] == reverse("socialaccount_connections")
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "[example.com] Third-Party Account Connected"

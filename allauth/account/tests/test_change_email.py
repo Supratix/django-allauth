@@ -69,9 +69,7 @@ def test_ajax_remove_primary(auth_client, user, settings):
     assert data["location"] == reverse("account_email")
 
 
-def test_remove_secondary(auth_client, user, settings, mailoutbox):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
-
+def test_remove_secondary(auth_client, user):
     secondary = EmailAddress.objects.create(
         email="secondary@email.org", user=user, verified=False, primary=False
     )
@@ -79,11 +77,8 @@ def test_remove_secondary(auth_client, user, settings, mailoutbox):
         reverse("account_email"),
         {"action_remove": "", "email": secondary.email},
     )
-
     assert not EmailAddress.objects.filter(email=secondary.pk).exists()
     assertTemplateUsed(resp, "account/messages/email_deleted.txt")
-    assert len(mailoutbox) == 1
-    assert f"{secondary.email} has been removed" in mailoutbox[0].body
 
 
 def test_set_primary_unverified(auth_client, user):
@@ -227,10 +222,9 @@ def test_delete_email_wipes_user_email(user_factory, client):
     assert user_email(user) == ""
 
 
-def test_change_email(user_factory, client, settings, mailoutbox):
+def test_change_email(user_factory, client, settings):
     settings.ACCOUNT_CHANGE_EMAIL = True
     settings.ACCOUNT_EMAIL_CONFIRMATION_HMAC = True
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
 
     user = user_factory(email_verified=True)
     client.force_login(user)
@@ -240,8 +234,6 @@ def test_change_email(user_factory, client, settings, mailoutbox):
         {"action_add": "", "email": "change-to@this.org"},
     )
     assert resp.status_code == 302
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "[example.com] Please Confirm Your Email Address"
     new_email = EmailAddress.objects.get(email="change-to@this.org")
     key = EmailConfirmationHMAC(new_email).key
     with patch("allauth.account.signals.email_changed.send") as email_changed_mock:
@@ -253,9 +245,6 @@ def test_change_email(user_factory, client, settings, mailoutbox):
     assert new_email.verified
     assert new_email.primary
     assert email_changed_mock.called
-    assert len(mailoutbox) == 2
-    assert mailoutbox[1].subject == "[example.com] Email Changed"
-    assert mailoutbox[1].to == [user.email]
 
 
 def test_add(auth_client, user, settings):

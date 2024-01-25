@@ -75,17 +75,9 @@ def test_set_password(client, user, password_factory, logout, settings, redirect
     ],
 )
 def test_change_password(
-    auth_client,
-    user,
-    user_password,
-    password_factory,
-    logout,
-    settings,
-    redirect_chain,
-    mailoutbox,
+    auth_client, user, user_password, password_factory, logout, settings, redirect_chain
 ):
     settings.ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = logout
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
     password = password_factory()
     resp = auth_client.post(
         reverse("account_change_password"),
@@ -93,5 +85,3 @@ def test_change_password(
         follow=True,
     )
     assert resp.redirect_chain == redirect_chain
-    assert len(mailoutbox) == 1
-    assert "Your password has been changed" in mailoutbox[0].body

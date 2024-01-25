@@ -214,15 +214,6 @@ class SocialLogin(object):
             sender=SocialLogin, request=request, sociallogin=self
         )
 
-        get_adapter().send_notification_mail(
-            "socialaccount/email/account_connected",
-            self.user,
-            context={
-                "account": self.account,
-                "provider": self.account.get_provider(),
-            },
-        )
-
     def serialize(self):
         serialize_instance = get_adapter().serialize_instance
         ret = dict(
@@ -304,34 +295,27 @@ class SocialLogin(object):
             signals.social_account_updated.send(
                 sender=SocialLogin, request=context.request, sociallogin=self
             )
-            self._store_token()
+            # Update token
+            if app_settings.STORE_TOKENS and self.token:
+                assert not self.token.pk
+                try:
+                    t = SocialToken.objects.get(
+                        account=self.account, app=self.token.app
+                    )
+                    t.token = self.token.token
+                    if self.token.token_secret:
+                        # only update the refresh token if we got one
+                        # many oauth2 providers do not resend the refresh token
+                        t.token_secret = self.token.token_secret
+                    t.expires_at = self.token.expires_at
+                    t.save()
+                    self.token = t
+                except SocialToken.DoesNotExist:
+                    self.token.account = a
+                    self.token.save()
             return True
         except SocialAccount.DoesNotExist:
             pass
-
-    def _store_token(self):
-        # Update token
-        if not app_settings.STORE_TOKENS or not self.token:
-            return
-        assert not self.token.pk
-        app = self.token.app
-        if app and not app.pk:
-            # If the app is not stored in the db, leave the FK empty.
-            app = None
-        try:
-            t = SocialToken.objects.get(account=self.account, app=app)
-            t.token = self.token.token
-            if self.token.token_secret:
-                # only update the refresh token if we got one
-                # many oauth2 providers do not resend the refresh token
-                t.token_secret = self.token.token_secret
-            t.expires_at = self.token.expires_at
-            t.save()
-            self.token = t
-        except SocialToken.DoesNotExist:
-            self.token.account = self.account
-            self.token.app = app
-            self.token.save()
 
     def _lookup_by_email(self):
         emails = [e.email for e in self.email_addresses if e.verified]

@@ -18,9 +18,6 @@ class Provider(object):
             raise ValueError("missing: app")
         self.app = app
 
-    def __str__(self):
-        return self.name
-
     @classmethod
     def get_slug(cls):
         return cls.slug or cls.id

@@ -61,14 +61,8 @@ def test_activate_totp_with_unverified_email(
 
 
 def test_activate_totp_success(
-    auth_client,
-    totp_validation_bypass,
-    user,
-    reauthentication_bypass,
-    settings,
-    mailoutbox,
+    auth_client, totp_validation_bypass, user, reauthentication_bypass
 ):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
     with reauthentication_bypass():
         resp = auth_client.get(reverse("mfa_activate_totp"))
         with totp_validation_bypass():
@@ -85,9 +79,6 @@ def test_activate_totp_success(
     assert Authenticator.objects.filter(
         user=user, type=Authenticator.Type.RECOVERY_CODES
     ).exists()
-    assert len(mailoutbox) == 1
-    assert "Authenticator App Activated" in mailoutbox[0].subject
-    assert "Authenticator app activated." in mailoutbox[0].body
 
 
 def test_index(auth_client, user_with_totp):
@@ -95,10 +86,7 @@ def test_index(auth_client, user_with_totp):
     assert "authenticators" in resp.context
 
 
-def test_deactivate_totp_success(
-    auth_client, user_with_totp, user_password, settings, mailoutbox
-):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
+def test_deactivate_totp_success(auth_client, user_with_totp, user_password):
     resp = auth_client.get(reverse("mfa_deactivate_totp"))
     assert resp.status_code == 302
     assert resp["location"].startswith(reverse("account_reauthenticate"))
@@ -107,9 +95,6 @@ def test_deactivate_totp_success(
     resp = auth_client.post(reverse("mfa_deactivate_totp"))
     assert resp.status_code == 302
     assert resp["location"] == reverse("mfa_index")
-    assert len(mailoutbox) == 1
-    assert "Authenticator App Deactivated" in mailoutbox[0].subject
-    assert "Authenticator app deactivated." in mailoutbox[0].body
 
 
 def test_user_without_totp_deactivate_totp(auth_client):
@@ -170,10 +155,7 @@ def test_view_recovery_codes(auth_client, user_with_recovery_codes, user_passwor
     assert len(resp.context["unused_codes"]) == app_settings.RECOVERY_CODE_COUNT
 
 
-def test_generate_recovery_codes(
-    auth_client, user_with_recovery_codes, user_password, settings, mailoutbox
-):
-    settings.ACCOUNT_EMAIL_NOTIFICATIONS = True
+def test_generate_recovery_codes(auth_client, user_with_recovery_codes, user_password):
     rc = Authenticator.objects.get(
         user=user_with_recovery_codes, type=Authenticator.Type.RECOVERY_CODES
     ).wrap()
@@ -190,9 +172,6 @@ def test_generate_recovery_codes(
         user=user_with_recovery_codes, type=Authenticator.Type.RECOVERY_CODES
     ).wrap()
     assert not rc.validate_code(prev_code)
-    assert len(mailoutbox) == 1
-    assert "New Recovery Codes Generated" in mailoutbox[0].subject
-    assert "A new set of" in mailoutbox[0].body
 
 
 def test_recovery_codes_login(
