@@ -56,7 +56,7 @@ class SocialApp(models.Model):
     key = models.CharField(
         verbose_name=_("key"), max_length=191, blank=True, help_text=_("Key")
     )
-    settings = models.JSONField(default=dict, blank=True)
+    settings = models.TextField()
 
     if allauth.app_settings.SITES_ENABLED:
         # Most apps can be used across multiple domains, therefore we use
