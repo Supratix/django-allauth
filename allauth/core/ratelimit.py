@@ -2,9 +2,13 @@ import hashlib
 import time
 from collections import namedtuple
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import render
+
+from allauth import app_settings
+from allauth.utils import import_callable
 
 
 Rate = namedtuple("Rate", "amount duration per")
@@ -115,8 +119,22 @@ def _consume_rate(request, *, action, rate, key=None, user=None):
     return allowed
 
 
-def consume_or_429(request, *args, **kwargs):
+def _handler429(request):
     from allauth.account import app_settings
 
+    return render(request, "429." + app_settings.TEMPLATE_EXTENSION, status=429)
+
+
+def consume_or_429(request, *args, **kwargs):
     if not consume(request, *args, **kwargs):
-        return render(request, "429." + app_settings.TEMPLATE_EXTENSION, status=429)
+        if app_settings.HEADLESS_ENABLED and hasattr(request.allauth, "headless"):
+            from allauth.headless.base.response import RateLimitResponse
+
+            return RateLimitResponse(request)
+
+        try:
+            handler429 = import_callable(settings.ROOT_URLCONF + ".handler429")
+            handler429 = import_callable(handler429)
+        except (ImportError, AttributeError):
+            handler429 = _handler429
+        return handler429(request)

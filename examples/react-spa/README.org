@@ -1,0 +1,14 @@
+* React Single-Page Application
+
+An example React application demonstrating the use of the headless functionality
+of django-allauth.
+
+** Running
+
+First, start by running the containers:
+
+#+begin_src bash
+  docker-compose up
+#+end_src
+
+Then, visit the app over at http://localhost:10000.
