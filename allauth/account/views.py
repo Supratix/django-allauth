@@ -365,7 +365,8 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
         "account/email_change." if app_settings.CHANGE_EMAIL else "account/email."
     ) + app_settings.TEMPLATE_EXTENSION
     form_class = AddEmailForm
-    success_url = reverse_lazy("account_email")
+    success_url = reverse_lazy("userprofile:account_esettings")
+#    success_url = reverse_lazy("account_email")
 
     def get_form_class(self):
         return get_form_class(app_settings.FORMS, "add_email", self.form_class)

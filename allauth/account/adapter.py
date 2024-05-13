@@ -155,7 +155,16 @@ class DefaultAccountAdapter(BaseAdapter):
         This is a hook that can be overridden to programmatically
         set the 'from' email address for sending emails
         """
-        return settings.DEFAULT_FROM_EMAIL
+        try:
+            from django.db import connection
+            from origin.models import Origin
+            origin = Origin.objects.get(schema_name=connection.schema_name)
+            if origin.no_reply_email == "hello@supratixmail.com":
+                return "" + str(origin.schema_name) + "@supratixmail.com"
+            else:
+                return origin.no_reply_email
+        except:
+            return settings.DEFAULT_FROM_EMAIL
 
     def render_mail(self, template_prefix, email, context, headers=None):
         """
