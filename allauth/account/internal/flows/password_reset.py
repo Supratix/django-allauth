@@ -1,11 +1,11 @@
+from urllib.parse import quote
+
 from django.contrib import messages
-from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 
-from allauth import app_settings as allauth_settings
 from allauth.account import signals
 from allauth.account.adapter import get_adapter
-from allauth.core.internal.httpkit import render_url
+from allauth.core.internal.httpkit import get_frontend_url
 from allauth.utils import build_absolute_uri
 
 
@@ -35,14 +35,25 @@ def finalize_password_reset(request, user):
 
 
 def get_reset_password_url(request):
-    if allauth_settings.HEADLESS_ENABLED:
-        from allauth.headless import app_settings as headless_settings
+    url = get_frontend_url(request, "account_reset_password")
+    if not url:
+        url = build_absolute_uri(request, reverse("account_reset_password"))
+    return url
 
-        url = headless_settings.FRONTEND_URLS.get("account_reset_password")
-        if allauth_settings.HEADLESS_ONLY and not url:
-            raise ImproperlyConfigured(
-                "settings.HEADLESS_FRONTEND_URLS['account_reset_password']"
-            )
-        if url:
-            return render_url(request, url)
-    return build_absolute_uri(request, reverse("account_reset_password"))
+
+def get_reset_password_from_key_url(request, key):
+    """
+    Method intented to be overriden in case the password reset email
+    needs to point to your frontend/SPA.
+    """
+    url = get_frontend_url(request, "account_reset_password_from_key", key=key)
+    if not url:
+        # We intentionally accept an opaque `key` on the interface here, and not
+        # implementation details such as a separate `uidb36` and `key. Ideally,
+        # this should have done on `urls` level as well.
+        path = reverse(
+            "account_reset_password_from_key", kwargs={"uidb36": "UID", "key": "KEY"}
+        )
+        path = path.replace("UID-KEY", quote(key))
+        url = build_absolute_uri(request, path)
+    return url
