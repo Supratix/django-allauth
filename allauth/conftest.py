@@ -1,15 +1,20 @@
 import random
+import time
 import uuid
 from contextlib import contextmanager
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 
 import pytest
 
 from allauth.account.models import EmailAddress
 from allauth.account.utils import user_email, user_pk_to_url_str, user_username
 from allauth.core import context
+from allauth.socialaccount.internal import statekit
+from allauth.socialaccount.providers.base.constants import AuthProcess
 
 
 def pytest_collection_modifyitems(config, items):
@@ -48,8 +53,6 @@ def user_password(password_factory):
 
 @pytest.fixture
 def user_factory(email_factory, db, user_password):
-    from allauth.mfa import totp
-
     def factory(
         email=None,
         username=None,
@@ -84,6 +87,8 @@ def user_factory(email_factory, db, user_password):
                     primary=True,
                 )
         if with_totp:
+            from allauth.mfa import totp
+
             totp.TOTP.activate(user, totp.generate_totp_secret())
         return user
 
@@ -166,7 +171,7 @@ def password_reset_key_generator():
 
 
 @pytest.fixture
-def google_provier_settings(settings):
+def google_provider_settings(settings):
     gsettings = {"APPS": [{"client_id": "client_id", "secret": "secret"}]}
     settings.SOCIALACCOUNT_PROVIDERS = {"google": gsettings}
     return gsettings
@@ -186,3 +191,32 @@ def user_with_recovery_codes(user_with_totp):
 
     recovery_codes.RecoveryCodes.activate(user_with_totp)
     return user_with_totp
+
+
+@pytest.fixture
+def sociallogin_setup_state():
+    def setup(client, process=None, next_url=None, **kwargs):
+        state_id = "123"
+        session = client.session
+        state = {"process": process or AuthProcess.LOGIN, **kwargs}
+        if next_url:
+            state["next"] = next_url
+        states = {}
+        states[state_id] = [state, time.time()]
+        session[statekit.STATES_SESSION_KEY] = states
+        session.save()
+        return state_id
+
+    return setup
+
+
+@pytest.fixture
+def request_factory(rf):
+    class RequestFactory:
+        def get(self, path):
+            request = rf.get(path)
+            SessionMiddleware(lambda request: None).process_request(request)
+            MessageMiddleware(lambda request: None).process_request(request)
+            return request
+
+    return RequestFactory()

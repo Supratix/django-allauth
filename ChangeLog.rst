@@ -1,5 +1,44 @@
-0.63.0 (unreleased)
+0.63.2 (unreleased)
 *******************
+
+- ``allauth.headless`` now supports the ``is_open_for_signup()`` adapter method.
+  In case signup is closed, a 403 is returned during signup.
+
+- Connecting a third-party account in ``HEADLESS_ONLY`` mode failed if the
+  connections view could not be reversed, fixed.
+
+- In case a headless attempt was made to connect a third-party account that was already
+  connected to a different account, no error was communicated to the frontend. Fixed.
+
+
+0.63.1 (2024-05-17)
+*******************
+
+Note worthy changes
+-------------------
+
+- When only ``allauth.account`` was installed, you could run into an exception
+  stating "allauth.socialaccount not installed, yet its models are
+  imported.". This has been fixed.
+
+- When ``SOCIALACCOUNT_EMAIL_AUTHENTICATION`` was turned on, and a user would
+  connect a third-party account for which email authentication would kick in,
+  the connect was implicitly skipped. Fixed.
+
+- The recommendation from the documentation to protect the Django admin login
+  could cause an infinite redirect loop in case of
+  ``AUTHENTICATED_LOGIN_REDIRECTS``. A decorator ``secure_admin_login()`` is now
+  offered out of the box to ensure that the Django admin is properly secured by
+  allauth (e.g. rate limits, 2FA).
+
+- Subpackages from the ``tests`` package were packaged, fixed.
+
+
+0.63.0 (2024-05-14)
+*******************
+
+Note worthy changes
+-------------------
 
 - New providers: TikTok, Lichess.
 
