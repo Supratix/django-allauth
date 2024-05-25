@@ -1,5 +1,8 @@
-0.63.2 (unreleased)
+0.63.2 (2024-05-24)
 *******************
+
+Note worthy changes
+-------------------
 
 - ``allauth.headless`` now supports the ``is_open_for_signup()`` adapter method.
   In case signup is closed, a 403 is returned during signup.
@@ -9,6 +12,12 @@
 
 - In case a headless attempt was made to connect a third-party account that was already
   connected to a different account, no error was communicated to the frontend. Fixed.
+
+- When the headless provider signup endpoint was called while that flow was not pending,
+  a crash would occur. This has been fixed to return a 409 (conflict).
+
+- Microsoft provider: the URLs pointing to the login and graph API are now
+  configurable via the app settings.
 
 
 0.63.1 (2024-05-17)
