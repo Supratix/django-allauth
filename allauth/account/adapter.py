@@ -37,7 +37,7 @@ from allauth.core import context, ratelimit
 from allauth.core.internal.adapter import BaseAdapter
 from allauth.core.internal.httpkit import headed_redirect_response
 from allauth.utils import generate_unique_username, import_attribute
-
+from supra_mailer.backend import get_tenant_mail
 
 class DefaultAccountAdapter(BaseAdapter):
     """The adapter class allows you to override various functionality of the
@@ -149,7 +149,7 @@ class DefaultAccountAdapter(BaseAdapter):
         This is a hook that can be overridden to programmatically
         set the 'from' email address for sending emails
         """
-        return settings.DEFAULT_FROM_EMAIL
+        return get_tenant_mail()
 
     def render_mail(self, template_prefix, email, context, headers=None):
         """
