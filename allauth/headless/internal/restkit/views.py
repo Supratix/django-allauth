@@ -1,14 +1,16 @@
 import json
+from typing import Dict, Optional, Type, Union
 
 from django.http import HttpResponseBadRequest
 from django.views.generic import View
 
 from allauth.core.exceptions import ImmediateHttpResponse
+from allauth.headless.internal.restkit.inputs import Input
 from allauth.headless.internal.restkit.response import ErrorResponse
 
 
 class RESTView(View):
-    input_class = None
+    input_class: Union[Optional[Dict[str, Type[Input]]], Type[Input]] = None
     handle_json_input = True
 
     def dispatch(self, request, *args, **kwargs):
@@ -37,7 +39,10 @@ class RESTView(View):
             data = {}
         self.input = input_class(data=data, **input_kwargs)
         if not self.input.is_valid():
-            return ErrorResponse(self.request, input=self.input)
+            return self.handle_invalid_input(self.input)
+
+    def handle_invalid_input(self, input):
+        return ErrorResponse(self.request, input=input)
 
     def _parse_json(self, request):
         if request.method == "GET" or not request.body:

@@ -26,7 +26,8 @@ export const Flows = Object.freeze({
   PROVIDER_SIGNUP: 'provider_signup',
   MFA_AUTHENTICATE: 'mfa_authenticate',
   REAUTHENTICATE: 'reauthenticate',
-  MFA_REAUTHENTICATE: 'mfa_reauthenticate'
+  MFA_REAUTHENTICATE: 'mfa_reauthenticate',
+  MFA_WEBAUTHN_SIGNUP: 'mfa_signup_webauthn'
 })
 
 export const URLs = Object.freeze({
@@ -64,12 +65,20 @@ export const URLs = Object.freeze({
   PROVIDER_TOKEN: BASE_URL + '/auth/provider/token',
 
   // Auth: Sessions
-  SESSIONS: BASE_URL + '/auth/sessions'
+  SESSIONS: BASE_URL + '/auth/sessions',
+
+  // Auth: WebAuthn
+  REAUTHENTICATE_WEBAUTHN: BASE_URL + '/auth/webauthn/reauthenticate',
+  AUTHENTICATE_WEBAUTHN: BASE_URL + '/auth/webauthn/authenticate',
+  LOGIN_WEBAUTHN: BASE_URL + '/auth/webauthn/login',
+  SIGNUP_WEBAUTHN: BASE_URL + '/auth/webauthn/signup',
+  WEBAUTHN_AUTHENTICATOR: BASE_URL + '/account/authenticators/webauthn'
 })
 
 export const AuthenticatorType = Object.freeze({
   TOTP: 'totp',
-  RECOVERY_CODES: 'recovery_codes'
+  RECOVERY_CODES: 'recovery_codes',
+  WEBAUTHN: 'webauthn'
 })
 
 function postForm (action, data) {
@@ -88,7 +97,7 @@ function postForm (action, data) {
   f.submit()
 }
 
-const tokenStorage = sessionStorage
+const tokenStorage = window.sessionStorage
 
 async function request (method, path, data, headers) {
   const options = {
@@ -123,10 +132,10 @@ async function request (method, path, data, headers) {
   if (msg.status === 410) {
     tokenStorage.removeItem('sessionToken')
   }
+  if (msg.meta?.session_token) {
+    tokenStorage.setItem('sessionToken', msg.meta.session_token)
+  }
   if ([401, 410].includes(msg.status) || (msg.status === 200 && msg.meta?.is_authenticated)) {
-    if (msg.meta?.session_token) {
-      tokenStorage.setItem('sessionToken', msg.meta.session_token)
-    }
     const event = new CustomEvent('allauth.auth.change', { detail: msg })
     document.dispatchEvent(event)
   }
@@ -147,6 +156,10 @@ export async function logout () {
 
 export async function signUp (data) {
   return await request('POST', URLs.SIGNUP, data)
+}
+
+export async function signUpByPasskey (data) {
+  return await request('POST', URLs.SIGNUP_WEBAUTHN, data)
 }
 
 export async function providerSignup (data) {
@@ -276,4 +289,62 @@ export function redirectToProvider (providerId, callbackURL, process = AuthProce
     callback_url: callbackURL,
     csrfmiddlewaretoken: getCSRFToken()
   })
+}
+
+export async function getWebAuthnCreateOptions (passwordless) {
+  let url = URLs.WEBAUTHN_AUTHENTICATOR
+  if (passwordless) {
+    url += '?passwordless'
+  }
+  return await request('GET', url)
+}
+
+export async function getWebAuthnCreateOptionsAtSignup () {
+  return await request('GET', URLs.SIGNUP_WEBAUTHN)
+}
+
+export async function addWebAuthnCredential (name, credential) {
+  return await request('POST', URLs.WEBAUTHN_AUTHENTICATOR, {
+    name,
+    credential
+  })
+}
+
+export async function signupWebAuthnCredential (name, credential) {
+  return await request('PUT', URLs.SIGNUP_WEBAUTHN, {
+    name,
+    credential
+  })
+}
+
+export async function deleteWebAuthnCredential (ids) {
+  return await request('DELETE', URLs.WEBAUTHN_AUTHENTICATOR, { authenticators: ids })
+}
+
+export async function updateWebAuthnCredential (id, data) {
+  return await request('PUT', URLs.WEBAUTHN_AUTHENTICATOR, { id, ...data })
+}
+
+export async function getWebAuthnRequestOptionsForReauthentication () {
+  return await request('GET', URLs.REAUTHENTICATE_WEBAUTHN)
+}
+
+export async function reauthenticateUsingWebAuthn (credential) {
+  return await request('POST', URLs.REAUTHENTICATE_WEBAUTHN, { credential })
+}
+
+export async function authenticateUsingWebAuthn (credential) {
+  return await request('POST', URLs.AUTHENTICATE_WEBAUTHN, { credential })
+}
+
+export async function loginUsingWebAuthn (credential) {
+  return await request('POST', URLs.LOGIN_WEBAUTHN, { credential })
+}
+
+export async function getWebAuthnRequestOptionsForLogin () {
+  return await request('GET', URLs.LOGIN_WEBAUTHN)
+}
+
+export async function getWebAuthnRequestOptionsForAuthentication () {
+  return await request('GET', URLs.AUTHENTICATE_WEBAUTHN)
 }

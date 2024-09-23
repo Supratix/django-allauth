@@ -10,9 +10,7 @@ from allauth.socialaccount.providers.openid_connect.views import (
 
 
 class OpenIDConnectProviderAccount(ProviderAccount):
-    def to_str(self):
-        dflt = super(OpenIDConnectProviderAccount, self).to_str()
-        return self.account.extra_data.get("name", dflt)
+    pass
 
 
 class OpenIDConnectProvider(OAuth2Provider):
@@ -67,6 +65,8 @@ class OpenIDConnectProvider(OAuth2Provider):
             name=data.get("name"),
             user_id=data.get("user_id"),
             picture=data.get("picture"),
+            last_name=data.get("family_name"),
+            first_name=data.get("given_name"),
         )
 
     def extract_email_addresses(self, data):

@@ -50,7 +50,10 @@ Home page
   https://allauth.org/
 
 Source code
-  https://github.com/pennersr/django-allauth
+  https://codeberg.org/allauth/django-allauth
+
+Issue Tracker
+  https://codeberg.org/allauth/django-allauth/issues
 
 Documentation
   https://docs.allauth.org/en/latest/
@@ -90,7 +93,7 @@ local account registration app to your ``INSTALLED_APPS`` list.
 
 This inadequacy is the reason for this project's existence  -- to offer a fully
 integrated authentication app that allows for both local and social
-authentication, with flows that just work, beautifully !
+authentication, with flows that just work, beautifully!
 
 .. end-rationale
 
@@ -140,7 +143,7 @@ Features
 
 **⚙️ Configuration**
     The required consumer keys and secrets for interacting with Facebook,
-    Twitter and the likes can be configured using regular settings, or, can be
+    X (Twitter) and the likes can be configured using regular settings, or, can be
     configured in the database via the Django admin. Here, optional support for
     the Django sites framework is available, which is helpful for larger
     multi-domain projects, but also allows for easy switching between a

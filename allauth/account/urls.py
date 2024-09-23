@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path, re_path
 
 from allauth import app_settings as allauth_app_settings
@@ -56,8 +57,21 @@ if not allauth_app_settings.SOCIALACCOUNT_ONLY:
                 views.password_reset_from_key_done,
                 name="account_reset_password_from_key_done",
             ),
+            path(
+                "login/code/confirm/",
+                views.confirm_login_code,
+                name="account_confirm_login_code",
+            ),
         ]
     )
+    if getattr(settings, "MFA_PASSKEY_SIGNUP_ENABLED", False):
+        urlpatterns.append(
+            path(
+                "signup/passkey/",
+                views.signup_by_passkey,
+                name="account_signup_by_passkey",
+            )
+        )
 
 if app_settings.LOGIN_BY_CODE_ENABLED:
     urlpatterns.extend(
@@ -66,11 +80,6 @@ if app_settings.LOGIN_BY_CODE_ENABLED:
                 "login/code/",
                 views.request_login_code,
                 name="account_request_login_code",
-            ),
-            path(
-                "login/code/confirm/",
-                views.confirm_login_code,
-                name="account_confirm_login_code",
             ),
         ]
     )

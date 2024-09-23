@@ -18,6 +18,7 @@ from allauth.account.adapter import get_adapter
 from allauth.account.forms import (
     AddEmailForm,
     ChangePasswordForm,
+    ConfirmEmailVerificationCodeForm,
     ConfirmLoginCodeForm,
     LoginForm,
     ReauthenticateForm,
@@ -29,6 +30,11 @@ from allauth.account.forms import (
     UserTokenForm,
 )
 from allauth.account.internal import flows
+from allauth.account.internal.decorators import (
+    login_not_required,
+    login_stage_required,
+    unauthenticated_only,
+)
 from allauth.account.mixins import (
     AjaxCapableProcessFormViewMixin,
     CloseableSignupMixin,
@@ -42,13 +48,15 @@ from allauth.account.models import (
     EmailConfirmation,
     get_emailconfirmation_model,
 )
-from allauth.account.reauthentication import resume_request
+from allauth.account.stages import (
+    EmailVerificationStage,
+    LoginByCodeStage,
+    LoginStageController,
+)
 from allauth.account.utils import (
-    complete_signup,
     perform_login,
     send_email_confirmation,
     sync_user_email_addresses,
-    url_str_to_user_pk,
     user_display,
 )
 from allauth.core import ratelimit
@@ -67,6 +75,7 @@ sensitive_post_parameters_m = method_decorator(
 
 
 @method_decorator(rate_limit(action="login"), name="dispatch")
+@method_decorator(unauthenticated_only, name="dispatch")
 class LoginView(
     NextRedirectMixin,
     RedirectAuthenticatedUserMixin,
@@ -100,6 +109,11 @@ class LoginView(
             return e.response
 
     def get_context_data(self, **kwargs):
+        passkey_login_enabled = False
+        if allauth_app_settings.MFA_ENABLED:
+            from allauth.mfa import app_settings as mfa_settings
+
+            passkey_login_enabled = mfa_settings.PASSKEY_LOGIN_ENABLED
         ret = super().get_context_data(**kwargs)
         signup_url = None
         if not allauth_app_settings.SOCIALACCOUNT_ONLY:
@@ -113,6 +127,7 @@ class LoginView(
                 "SOCIALACCOUNT_ENABLED": allauth_app_settings.SOCIALACCOUNT_ENABLED,
                 "SOCIALACCOUNT_ONLY": allauth_app_settings.SOCIALACCOUNT_ONLY,
                 "LOGIN_BY_CODE_ENABLED": app_settings.LOGIN_BY_CODE_ENABLED,
+                "PASSKEY_LOGIN_ENABLED": passkey_login_enabled,
             }
         )
         if app_settings.LOGIN_BY_CODE_ENABLED:
@@ -127,6 +142,7 @@ login = LoginView.as_view()
 
 
 @method_decorator(rate_limit(action="signup"), name="dispatch")
+@method_decorator(unauthenticated_only, name="dispatch")
 class SignupView(
     RedirectAuthenticatedUserMixin,
     CloseableSignupMixin,
@@ -151,17 +167,22 @@ class SignupView(
             return resp
         try:
             redirect_url = self.get_success_url()
-            return complete_signup(
+            return flows.signup.complete_signup(
                 self.request,
-                self.user,
-                email_verification=None,
-                success_url=redirect_url,
+                user=self.user,
+                redirect_url=redirect_url,
+                by_passkey=form.by_passkey,
             )
         except ImmediateHttpResponse as e:
             return e.response
 
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
+        passkey_signup_enabled = False
+        if allauth_app_settings.MFA_ENABLED:
+            from allauth.mfa import app_settings as mfa_settings
+
+            passkey_signup_enabled = mfa_settings.PASSKEY_SIGNUP_ENABLED
         form = ret["form"]
         email = self.request.session.get("account_verified_email")
         if email:
@@ -171,13 +192,22 @@ class SignupView(
             for email_key in email_keys:
                 form.fields[email_key].initial = email
         login_url = self.passthrough_next_url(reverse("account_login"))
+        signup_url = self.passthrough_next_url(reverse("account_signup"))
+        signup_by_passkey_url = None
+        if passkey_signup_enabled:
+            signup_by_passkey_url = self.passthrough_next_url(
+                reverse("account_signup_by_passkey")
+            )
         site = get_current_site(self.request)
         ret.update(
             {
                 "login_url": login_url,
+                "signup_url": signup_url,
+                "signup_by_passkey_url": signup_by_passkey_url,
                 "site": site,
                 "SOCIALACCOUNT_ENABLED": allauth_app_settings.SOCIALACCOUNT_ENABLED,
                 "SOCIALACCOUNT_ONLY": allauth_app_settings.SOCIALACCOUNT_ONLY,
+                "PASSKEY_SIGNUP_ENABLED": passkey_signup_enabled,
             }
         )
         return ret
@@ -199,6 +229,19 @@ class SignupView(
 signup = SignupView.as_view()
 
 
+class SignupByPasskeyView(SignupView):
+    template_name = "account/signup_by_passkey." + app_settings.TEMPLATE_EXTENSION
+
+    def get_form_kwargs(self):
+        ret = super().get_form_kwargs()
+        ret["by_passkey"] = True
+        return ret
+
+
+signup_by_passkey = SignupByPasskeyView.as_view()
+
+
+@method_decorator(login_not_required, name="dispatch")
 class ConfirmEmailView(NextRedirectMixin, LogoutFunctionalityMixin, TemplateView):
     template_name = "account/email_confirm." + app_settings.TEMPLATE_EXTENSION
 
@@ -231,35 +274,16 @@ class ConfirmEmailView(NextRedirectMixin, LogoutFunctionalityMixin, TemplateView
             self.logout()
 
     def post(self, *args, **kwargs):
-        self.object = confirmation = self.get_object()
-        email_address = confirmation.confirm(self.request)
+        self.object = verification = self.get_object()
+        email_address, response = flows.email_verification.verify_email_and_resume(
+            self.request, verification
+        )
+        if response:
+            return response
         if not email_address:
-            get_adapter(self.request).add_message(
-                self.request,
-                messages.ERROR,
-                "account/messages/email_confirmation_failed.txt",
-                {"email": confirmation.email_address.email},
-            )
             return self.respond(False)
 
         self.logout_other_user(self.object)
-
-        get_adapter(self.request).add_message(
-            self.request,
-            messages.SUCCESS,
-            "account/messages/email_confirmed.txt",
-            {"email": confirmation.email_address.email},
-        )
-        if app_settings.LOGIN_ON_EMAIL_CONFIRMATION:
-            resp = self.login_on_confirm(confirmation)
-            if resp is not None:
-                return resp
-        # Don't -- allauth doesn't touch is_active so that sys admin can
-        # use it to block users et al
-        #
-        # user = confirmation.email_address.user
-        # user.is_active = True
-        # user.save()
         return self.respond(True)
 
     def respond(self, success):
@@ -268,46 +292,6 @@ class ConfirmEmailView(NextRedirectMixin, LogoutFunctionalityMixin, TemplateView
             ctx = self.get_context_data()
             return self.render_to_response(ctx)
         return redirect(redirect_url)
-
-    def login_on_confirm(self, confirmation):
-        """
-        Simply logging in the user may become a security issue. If you
-        do not take proper care (e.g. don't purge used email
-        confirmations), a malicious person that got hold of the link
-        will be able to login over and over again and the user is
-        unable to do anything about it. Even restoring their own mailbox
-        security will not help, as the links will still work. For
-        password reset this is different, this mechanism works only as
-        long as the attacker has access to the mailbox. If they no
-        longer has access they cannot issue a password request and
-        intercept it. Furthermore, all places where the links are
-        listed (log files, but even Google Analytics) all of a sudden
-        need to be secured. Purging the email confirmation once
-        confirmed changes the behavior -- users will not be able to
-        repeatedly confirm (in case they forgot that they already
-        clicked the mail).
-
-        All in all, opted for storing the user that is in the process
-        of signing up in the session to avoid all of the above.  This
-        may not 100% work in case the user closes the browser (and the
-        session gets lost), but at least we're secure.
-        """
-        user_pk = None
-        user_pk_str = get_adapter(self.request).unstash_user(self.request)
-        if user_pk_str:
-            user_pk = url_str_to_user_pk(user_pk_str)
-        user = confirmation.email_address.user
-        if user_pk == user.pk and self.request.user.is_anonymous:
-            return perform_login(
-                self.request,
-                user,
-                email_verification=app_settings.EmailVerificationMethod.NONE,
-                # passed as callable, as this method
-                # depends on the authenticated state
-                redirect_url=self.get_redirect_url,
-            )
-
-        return None
 
     def get_object(self, queryset=None):
         key = self.kwargs["key"]
@@ -365,13 +349,13 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
         "account/email_change." if app_settings.CHANGE_EMAIL else "account/email."
     ) + app_settings.TEMPLATE_EXTENSION
     form_class = AddEmailForm
-    success_url = reverse_lazy("userprofile:account_esettings")
-#    success_url = reverse_lazy("account_email")
+    success_url = reverse_lazy("account_email")
 
     def get_form_class(self):
         return get_form_class(app_settings.FORMS, "add_email", self.form_class)
 
     def dispatch(self, request, *args, **kwargs):
+        self._did_send_verification_email = False
         sync_user_email_addresses(request.user)
         return super().dispatch(request, *args, **kwargs)
 
@@ -382,12 +366,13 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
 
     def form_valid(self, form):
         flows.manage_email.add_email(self.request, form)
+        self._did_send_verification_email = True
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
         res = None
         if "action_add" in request.POST:
-            res = super(EmailView, self).post(request, *args, **kwargs)
+            res = super().post(request, *args, **kwargs)
         elif request.POST.get("email"):
             if "action_send" in request.POST:
                 res = self._action_send(request)
@@ -395,6 +380,7 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
                 res = self._action_remove(request)
             elif "action_primary" in request.POST:
                 res = self._action_primary(request)
+
             res = res or HttpResponseRedirect(self.get_success_url())
             # Given that we bypassed AjaxCapableProcessFormViewMixin,
             # we'll have to call invoke it manually...
@@ -422,6 +408,9 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
             send_email_confirmation(
                 self.request, request.user, email=email_address.email
             )
+            self._did_send_verification_email = True
+        if app_settings.EMAIL_VERIFICATION_BY_CODE_ENABLED:
+            return HttpResponseRedirect(reverse("account_email_verification_sent"))
 
     def _action_remove(self, request, *args, **kwargs):
         email_address = self._get_email_address(request)
@@ -478,6 +467,14 @@ class EmailView(AjaxCapableProcessFormViewMixin, FormView):
                 }
             )
         return data
+
+    def get_success_url(self):
+        if (
+            self._did_send_verification_email
+            and app_settings.EMAIL_VERIFICATION_BY_CODE_ENABLED
+        ):
+            return reverse("account_email_verification_sent")
+        return self.success_url
 
 
 email = EmailView.as_view()
@@ -566,6 +563,7 @@ class PasswordSetView(AjaxCapableProcessFormViewMixin, NextRedirectMixin, FormVi
 password_set = PasswordSetView.as_view()
 
 
+@method_decorator(login_not_required, name="dispatch")
 class PasswordResetView(NextRedirectMixin, AjaxCapableProcessFormViewMixin, FormView):
     template_name = "account/password_reset." + app_settings.TEMPLATE_EXTENSION
     form_class = ResetPasswordForm
@@ -606,6 +604,7 @@ password_reset_done = PasswordResetDoneView.as_view()
 
 
 @method_decorator(rate_limit(action="reset_password_from_key"), name="dispatch")
+@method_decorator(login_not_required, name="dispatch")
 class PasswordResetFromKeyView(
     AjaxCapableProcessFormViewMixin,
     NextRedirectMixin,
@@ -697,6 +696,7 @@ class PasswordResetFromKeyView(
 password_reset_from_key = PasswordResetFromKeyView.as_view()
 
 
+@method_decorator(login_not_required, name="dispatch")
 class PasswordResetFromKeyDoneView(TemplateView):
     template_name = (
         "account/password_reset_from_key_done." + app_settings.TEMPLATE_EXTENSION
@@ -721,8 +721,7 @@ class LogoutView(NextRedirectMixin, LogoutFunctionalityMixin, TemplateView):
 
     def post(self, *args, **kwargs):
         url = self.get_redirect_url()
-        if self.request.user.is_authenticated:
-            self.logout()
+        self.logout()
         response = redirect(url)
         return _ajax_response(self.request, response)
 
@@ -735,6 +734,7 @@ class LogoutView(NextRedirectMixin, LogoutFunctionalityMixin, TemplateView):
 logout = LogoutView.as_view()
 
 
+@method_decorator(login_not_required, name="dispatch")
 class AccountInactiveView(TemplateView):
     template_name = "account/account_inactive." + app_settings.TEMPLATE_EXTENSION
 
@@ -742,11 +742,92 @@ class AccountInactiveView(TemplateView):
 account_inactive = AccountInactiveView.as_view()
 
 
+@method_decorator(login_not_required, name="dispatch")
 class EmailVerificationSentView(TemplateView):
     template_name = "account/verification_sent." + app_settings.TEMPLATE_EXTENSION
 
 
-email_verification_sent = EmailVerificationSentView.as_view()
+class ConfirmEmailVerificationCodeView(FormView):
+    template_name = (
+        "account/confirm_email_verification_code." + app_settings.TEMPLATE_EXTENSION
+    )
+    form_class = ConfirmEmailVerificationCodeForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.stage = LoginStageController.enter(request, EmailVerificationStage.key)
+        self.verification, self.pending_verification = (
+            flows.email_verification_by_code.get_pending_verification(
+                request, peek=True
+            )
+        )
+        # preventing enumeration?
+        verification_is_fake = (
+            self.pending_verification and "code" not in self.pending_verification
+        )
+        # Can we at all continue?
+        if (
+            # No verification pending?
+            (
+                not self.pending_verification
+            )  # Anonymous, yet no stage (or fake verifcation)?
+            or (
+                request.user.is_anonymous
+                and not self.stage
+                and not verification_is_fake
+            )
+        ):
+            return HttpResponseRedirect(
+                reverse(
+                    "account_login" if request.user.is_anonymous else "account_email"
+                )
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_class(self):
+        return get_form_class(
+            app_settings.FORMS, "confirm_email_verification_code", self.form_class
+        )
+
+    def get_form_kwargs(self):
+        ret = super().get_form_kwargs()
+        ret["code"] = self.verification.key if self.verification else ""
+        return ret
+
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+        ret["email"] = self.pending_verification["email"]
+        ret["cancel_url"] = None if self.stage else reverse("account_email")
+        return ret
+
+    def form_valid(self, form):
+        email_address = self.verification.confirm(self.request)
+        if self.stage:
+            if not email_address:
+                return self.stage.abort()
+            return self.stage.exit()
+        return HttpResponseRedirect(reverse("account_email"))
+
+    def form_invalid(self, form):
+        attempts_left = flows.email_verification_by_code.record_invalid_attempt(
+            self.request, self.pending_verification
+        )
+        if attempts_left:
+            return super().form_invalid(form)
+        adapter = get_adapter(self.request)
+        adapter.add_message(
+            self.request,
+            messages.ERROR,
+            message=adapter.error_messages["too_many_login_attempts"],
+        )
+        return HttpResponseRedirect(reverse("account_login"))
+
+
+@method_decorator(login_not_required, name="dispatch")
+def email_verification_sent(request):
+    if app_settings.EMAIL_VERIFICATION_BY_CODE_ENABLED:
+        return ConfirmEmailVerificationCodeView.as_view()(request)
+    else:
+        return EmailVerificationSentView.as_view()(request)
 
 
 class BaseReauthenticateView(NextRedirectMixin, FormView):
@@ -782,7 +863,7 @@ class BaseReauthenticateView(NextRedirectMixin, FormView):
         return url
 
     def form_valid(self, form):
-        response = resume_request(self.request)
+        response = flows.reauthentication.resume_request(self.request)
         if response:
             return response
         return super().form_valid(form)
@@ -830,6 +911,7 @@ class ReauthenticateView(BaseReauthenticateView):
 reauthenticate = ReauthenticateView.as_view()
 
 
+@method_decorator(unauthenticated_only, name="dispatch")
 class RequestLoginCodeView(RedirectAuthenticatedUserMixin, NextRedirectMixin, FormView):
     form_class = RequestLoginCodeForm
     template_name = "account/request_login_code." + app_settings.TEMPLATE_EXTENSION
@@ -862,14 +944,21 @@ class RequestLoginCodeView(RedirectAuthenticatedUserMixin, NextRedirectMixin, Fo
 request_login_code = RequestLoginCodeView.as_view()
 
 
+@method_decorator(
+    login_stage_required(
+        stage=LoginByCodeStage.key, redirect_urlname="account_request_login_code"
+    ),
+    name="dispatch",
+)
 class ConfirmLoginCodeView(RedirectAuthenticatedUserMixin, NextRedirectMixin, FormView):
     form_class = ConfirmLoginCodeForm
     template_name = "account/confirm_login_code." + app_settings.TEMPLATE_EXTENSION
 
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        self.stage = request._login_stage
         self.user, self.pending_login = flows.login_by_code.get_pending_login(
-            request, peek=True
+            self.request, self.stage.login, peek=True
         )
         if not self.pending_login:
             return HttpResponseRedirect(reverse("account_request_login_code"))
@@ -886,12 +975,12 @@ class ConfirmLoginCodeView(RedirectAuthenticatedUserMixin, NextRedirectMixin, Fo
     def form_valid(self, form):
         redirect_url = self.get_next_url()
         return flows.login_by_code.perform_login_by_code(
-            self.request, self.user, redirect_url, self.pending_login
+            self.request, self.stage, redirect_url
         )
 
     def form_invalid(self, form):
         attempts_left = flows.login_by_code.record_invalid_attempt(
-            self.request, self.pending_login
+            self.request, self.stage.login
         )
         if attempts_left:
             return super().form_invalid(form)
@@ -901,7 +990,13 @@ class ConfirmLoginCodeView(RedirectAuthenticatedUserMixin, NextRedirectMixin, Fo
             messages.ERROR,
             message=adapter.error_messages["too_many_login_attempts"],
         )
-        return HttpResponseRedirect(reverse("account_request_login_code"))
+        return HttpResponseRedirect(
+            reverse(
+                "account_request_login_code"
+                if self.pending_login["initiated_by_user"]
+                else "account_login"
+            )
+        )
 
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)

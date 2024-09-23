@@ -7,270 +7,303 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-14 11:32-0500\n"
-"PO-Revision-Date: 2024-04-20 21:47+0200\n"
-"Last-Translator: Abdo <abdo@abdnh.net>\n"
-"Language-Team: Arabic\n"
+"POT-Creation-Date: 2024-09-21 06:42-0500\n"
+"PO-Revision-Date: 2024-07-08 18:09+0000\n"
+"Last-Translator: Amr Essam <amr_esam@ymail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/allauth/django-"
+"allauth/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
-"X-Generator: Poedit 3.3.2\n"
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 5.7-dev\n"
 
-#: account/adapter.py:58
+#: account/adapter.py:51
 msgid "This account is currently inactive."
 msgstr "هذا الحساب غير نشط حاليا."
 
-#: account/adapter.py:60
+#: account/adapter.py:53
 #, fuzzy
 #| msgid "You cannot remove your primary email address (%(email)s)."
 msgid "You cannot remove your primary email address."
 msgstr "لا يمكنك إزالة عنوان البريد الإلكتروني الرئيسي (%(email)s)."
 
-#: account/adapter.py:63
+#: account/adapter.py:56
 msgid "This email address is already associated with this account."
 msgstr "عنوان البريد الإلكتروني هذا مربوط بالفعل مع هذا الحساب."
 
-#: account/adapter.py:66
+#: account/adapter.py:59
 msgid "The email address and/or password you specified are not correct."
 msgstr "عنوان البريد الإلكتروني و / أو كلمة المرور غير صحيحة."
 
-#: account/adapter.py:68
+#: account/adapter.py:61
 msgid "A user is already registered with this email address."
 msgstr "هنالك مستخدم مسجل سابقا يستخدم عنوان البريد الإلكتروني نفسه."
 
-#: account/adapter.py:69
+#: account/adapter.py:62
 msgid "Please type your current password."
 msgstr "الرجاء كتابة كلمة المرور الحالية."
 
-#: account/adapter.py:70 mfa/adapter.py:30
+#: account/adapter.py:63 mfa/adapter.py:40
 msgid "Incorrect code."
-msgstr ""
+msgstr "شفرة خاطئة."
 
-#: account/adapter.py:71
-#, fuzzy
-#| msgid "Current Password"
+#: account/adapter.py:64
 msgid "Incorrect password."
-msgstr "كلمة المرور الحالية"
+msgstr "كلمة مرور خاطئة."
 
-#: account/adapter.py:72
-#, fuzzy
-#| msgid "Bad Token"
+#: account/adapter.py:65
 msgid "Invalid or expired key."
-msgstr "كود غير صالح"
+msgstr "مفتاح خاطئ او منتهي."
 
-#: account/adapter.py:73
+#: account/adapter.py:66
 msgid "The password reset token was invalid."
 msgstr "كود إعادة تعيين كلمة المرور غير صالح."
 
-#: account/adapter.py:74
+#: account/adapter.py:67
 #, python-format
 msgid "You cannot add more than %d email addresses."
 msgstr "لا يمكنك إضافة أكثر من %d بريد إلكتروني."
 
-#: account/adapter.py:76
+#: account/adapter.py:69
 msgid "Too many failed login attempts. Try again later."
 msgstr "تجاوزت الحد المسموح لمحاولة تسجيل الدخول. حاول في وقت لاحق."
 
-#: account/adapter.py:78
+#: account/adapter.py:71
 msgid "The email address is not assigned to any user account"
 msgstr "لم يتم ربط عنوان البريد الإلكتروني مع أي حساب مستخدم"
 
-#: account/adapter.py:79
+#: account/adapter.py:72
 #: templates/account/messages/unverified_primary_email.txt:2
 msgid "Your primary email address must be verified."
 msgstr "يجب توثيق عنوان بريدك الإلكتروني الرئيسي."
 
-#: account/adapter.py:81
+#: account/adapter.py:74
 msgid "Username can not be used. Please use other username."
 msgstr "اسم المستخدم غير مسموح به. الرجاء اختيار اسم آخر‪."
 
-#: account/adapter.py:84
+#: account/adapter.py:77
 msgid "The username and/or password you specified are not correct."
 msgstr "اسم المستخدم و / أو كلمة المرور غير صحيحة."
 
-#: account/adapter.py:736
-#, fuzzy
-#| msgid "Forgot Password?"
+#: account/adapter.py:741
 msgid "Use your password"
-msgstr "هل نسيت كلمة المرور؟"
+msgstr "استخدم كلمة مرورك"
 
-#: account/adapter.py:747
-msgid "Use your authenticator app"
-msgstr ""
+#: account/adapter.py:750
+msgid "Use authenticator app or code"
+msgstr "استخدم تطبيق المصادقة او الكود"
+
+#: account/adapter.py:757 templates/mfa/authenticate.html:36
+#: templates/mfa/webauthn/reauthenticate.html:15
+#, fuzzy
+#| msgid "secret key"
+msgid "Use a security key"
+msgstr "مفتاح سري"
 
 #: account/admin.py:23
-#, fuzzy
-#| msgid "Your primary email address must be verified."
 msgid "Mark selected email addresses as verified"
-msgstr "يجب توثيق عنوان بريدك الإلكتروني الرئيسي."
+msgstr "تحديد البريد الإلكتروني المختار بأنه تم التحقق منه"
 
 #: account/apps.py:11
 msgid "Accounts"
 msgstr "الحسابات"
 
-#: account/forms.py:56 account/forms.py:477
+#: account/forms.py:57 account/forms.py:483
 msgid "You must type the same password each time."
 msgstr "يجب عليك كتابة كلمة المرور نفسها في كل مرة‪."
 
-#: account/forms.py:91 account/forms.py:407 account/forms.py:558
-#: account/forms.py:673
+#: account/forms.py:92 account/forms.py:413 account/forms.py:573
+#: account/forms.py:685
 msgid "Password"
 msgstr "كلمة المرور"
 
-#: account/forms.py:92
+#: account/forms.py:93
 msgid "Remember Me"
 msgstr "تذكرني"
 
-#: account/forms.py:102 account/forms.py:269 account/forms.py:493
-#: account/forms.py:576 account/forms.py:690
+#: account/forms.py:103 account/forms.py:270 account/forms.py:499
+#: account/forms.py:591 account/forms.py:702
 msgid "Email address"
 msgstr "عنوان البريد الالكتروني"
 
-#: account/forms.py:106 account/forms.py:307 account/forms.py:490
-#: account/forms.py:571
+#: account/forms.py:107 account/forms.py:308 account/forms.py:496
+#: account/forms.py:586
 msgid "Email"
 msgstr "البريد الالكتروني"
 
-#: account/forms.py:109 account/forms.py:112 account/forms.py:259
-#: account/forms.py:262
+#: account/forms.py:110 account/forms.py:113 account/forms.py:260
+#: account/forms.py:263
 msgid "Username"
 msgstr "اسم المستخدم"
 
-#: account/forms.py:122
+#: account/forms.py:123
 msgid "Username or email"
 msgstr "اسم المستخدم أو البريد الإلكتروني"
 
-#: account/forms.py:125
+#: account/forms.py:126
 msgctxt "field label"
 msgid "Login"
 msgstr "تسجيل الدخول"
 
-#: account/forms.py:136
+#: account/forms.py:137
 #, fuzzy
 #| msgid "Forgot Password?"
 msgid "Forgot your password?"
 msgstr "هل نسيت كلمة المرور؟"
 
-#: account/forms.py:298
+#: account/forms.py:299
 msgid "Email (again)"
 msgstr "البريد الإلكتروني ‪(مجددا)"
 
-#: account/forms.py:302
+#: account/forms.py:303
 msgid "Email address confirmation"
 msgstr "تأكيد البريد الإلكتروني"
 
-#: account/forms.py:310
+#: account/forms.py:311
 msgid "Email (optional)"
 msgstr "البريد الالكتروني (اختياري)"
 
-#: account/forms.py:365
+#: account/forms.py:370
 msgid "You must type the same email each time."
 msgstr "يجب عليك كتابة البريد الإلكتروني نفسه في كل مرة‪."
 
-#: account/forms.py:413 account/forms.py:559
+#: account/forms.py:419 account/forms.py:574
 msgid "Password (again)"
 msgstr "كلمة المرور (مجددا)"
 
-#: account/forms.py:539
+#: account/forms.py:554
 msgid "Current Password"
 msgstr "كلمة المرور الحالية"
 
-#: account/forms.py:541 account/forms.py:626
+#: account/forms.py:556 account/forms.py:638
 msgid "New Password"
 msgstr "كلمة المرور الجديدة"
 
-#: account/forms.py:542 account/forms.py:627
+#: account/forms.py:557 account/forms.py:639
 msgid "New Password (again)"
 msgstr "كلمة المرور الجديدة (مجددا)"
 
-#: account/forms.py:713 account/forms.py:715 mfa/forms.py:15 mfa/forms.py:17
-#: mfa/forms.py:60
+#: account/forms.py:725 account/forms.py:727 mfa/base/forms.py:15
+#: mfa/base/forms.py:17 mfa/totp/forms.py:13
 msgid "Code"
-msgstr ""
+msgstr "شفرة"
 
-#: account/models.py:20
+#: account/models.py:26
 msgid "user"
 msgstr "مستخدم"
 
-#: account/models.py:26 account/models.py:34 account/models.py:146
+#: account/models.py:32 account/models.py:40 account/models.py:147
 msgid "email address"
 msgstr "عنوان بريد إلكتروني"
 
-#: account/models.py:28
+#: account/models.py:34
 msgid "verified"
 msgstr "موثق"
 
-#: account/models.py:29
+#: account/models.py:35
 msgid "primary"
 msgstr "رئيسي"
 
-#: account/models.py:35
+#: account/models.py:41
 msgid "email addresses"
 msgstr "عناوين البريد الالكتروني"
 
-#: account/models.py:149
+#: account/models.py:150
 msgid "created"
 msgstr "تمّ إنشاؤه"
 
-#: account/models.py:150
+#: account/models.py:151
 msgid "sent"
 msgstr "تم ارساله"
 
-#: account/models.py:151 socialaccount/models.py:69
+#: account/models.py:152 socialaccount/models.py:69
 msgid "key"
 msgstr "مفتاح"
 
-#: account/models.py:156
+#: account/models.py:157
 msgid "email confirmation"
 msgstr "تأكيد البريد الإلكتروني"
 
-#: account/models.py:157
+#: account/models.py:158
 msgid "email confirmations"
 msgstr "تأكيدات البريد الإلكتروني"
 
 #: headless/apps.py:7
 msgid "Headless"
-msgstr ""
+msgstr "مقطوعة الرأس"
 
-#: mfa/adapter.py:22
+#: mfa/adapter.py:32
 msgid ""
 "You cannot add an email address to an account protected by two-factor "
 "authentication."
 msgstr ""
+"لا يمكنك إضافة عنوان بريد إلكتروني إلى حساب محمي بواسطة المصادقة الثنائية."
 
-#: mfa/adapter.py:25
+#: mfa/adapter.py:35
 msgid "You cannot deactivate two-factor authentication."
-msgstr ""
+msgstr "لا يمكنك إلغاء تنشيط المصادقة الثنائية."
 
-#: mfa/adapter.py:28
+#: mfa/adapter.py:38
 msgid ""
 "You cannot generate recovery codes without having two-factor authentication "
 "enabled."
-msgstr ""
+msgstr "لا يمكنك إنشاء رموز الاسترداد دون تمكين المصادقة الثنائية."
 
-#: mfa/adapter.py:32
+#: mfa/adapter.py:42
 msgid ""
 "You cannot activate two-factor authentication until you have verified your "
 "email address."
 msgstr ""
+"لا يمكنك تفعيل المصادقة الثنائية إلا بعد التحقق من عنوان بريدك الإلكتروني."
+
+#: mfa/adapter.py:141
+#, fuzzy
+#| msgid "secret key"
+msgid "Master key"
+msgstr "مفتاح سري"
+
+#: mfa/adapter.py:143
+msgid "Backup key"
+msgstr ""
+
+#: mfa/adapter.py:144
+#, python-brace-format
+msgid "Key nr. {number}"
+msgstr ""
 
 #: mfa/apps.py:9
 msgid "MFA"
-msgstr ""
+msgstr "وزارة الخارجية"
 
-#: mfa/forms.py:58
-msgid "Authenticator code"
-msgstr ""
-
-#: mfa/models.py:28
+#: mfa/models.py:24
 msgid "Recovery codes"
+msgstr "رموز الاسترداد"
+
+#: mfa/models.py:25
+msgid "TOTP Authenticator"
+msgstr "أداة مصادقة TOTP"
+
+#: mfa/models.py:26
+msgid "WebAuthn"
 msgstr ""
 
-#: mfa/models.py:29
-msgid "TOTP Authenticator"
+#: mfa/totp/forms.py:11
+msgid "Authenticator code"
+msgstr "كود المصدق"
+
+#: mfa/webauthn/forms.py:56
+#, fuzzy
+#| msgid "Password"
+msgid "Passwordless"
+msgstr "كلمة المرور"
+
+#: mfa/webauthn/forms.py:59
+msgid ""
+"Enabling passwordless operation allows you to sign in using just this key, "
+"but imposes additional requirements such as biometrics or PIN protection."
 msgstr ""
 
 #: socialaccount/adapter.py:36
@@ -305,6 +338,13 @@ msgid "You cannot disconnect your last remaining third-party account."
 msgstr ""
 "يمكنك تسجيل الدخول إلى حسابك باستخدام أي من حسابات الطرف الثالث التالية:"
 
+#: socialaccount/adapter.py:47
+#: templates/socialaccount/messages/account_connected_other.txt:2
+#, fuzzy
+#| msgid "The social account is already connected to a different account."
+msgid "The third-party account is already connected to a different account."
+msgstr "حساب التواصل الاجتماعي متصل مسبقا مع حساب مختلف."
+
 #: socialaccount/apps.py:9
 msgid "Social Accounts"
 msgstr "حسابات التواصل الاجتماعي"
@@ -337,7 +377,7 @@ msgstr "مفتاح سري"
 msgid "API secret, client secret, or consumer secret"
 msgstr "مفتاح واجهة برمجية سري أو مفتاح مستهلك"
 
-#: socialaccount/models.py:69
+#: socialaccount/models.py:69 templates/mfa/webauthn/authenticator_list.html:18
 msgid "Key"
 msgstr "مفتاح"
 
@@ -405,17 +445,21 @@ msgstr "أكواد التطبيقات الاجتماعية"
 msgid "Invalid profile data"
 msgstr "معلومات ملف شخصي غير صالحة"
 
-#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:17
+#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:16
 #, fuzzy
 #| msgctxt "field label"
 #| msgid "Login"
 msgid "Login"
 msgstr "تسجيل الدخول"
 
-#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:20
-#: templates/mfa/authenticate.html:27
+#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:19
+#: templates/account/confirm_email_verification_code.html:33
+#: templates/account/confirm_email_verification_code.html:37
+#: templates/account/confirm_login_code.html:32
+#: templates/mfa/authenticate.html:40
+#: templates/mfa/webauthn/signup_form.html:26
 msgid "Cancel"
-msgstr ""
+msgstr "يلغي"
 
 #: socialaccount/providers/oauth/client.py:85
 #, fuzzy, python-format
@@ -468,18 +512,47 @@ msgstr "تأكيد البريد الإلكتروني"
 
 #: templates/account/base_reauthenticate.html:12
 msgid "Please reauthenticate to safeguard your account."
-msgstr ""
+msgstr "يرجى إعادة المصادقة لحماية حسابك."
 
 #: templates/account/base_reauthenticate.html:19
+#: templates/mfa/authenticate.html:31
 msgid "Alternative options"
+msgstr "خيارات بديلة"
+
+#: templates/account/confirm_email_verification_code.html:5
+#, fuzzy
+#| msgid "email confirmation"
+msgid "Email Verification"
+msgstr "تأكيد البريد الإلكتروني"
+
+#: templates/account/confirm_email_verification_code.html:9
+#, fuzzy
+#| msgid "token secret"
+msgid "Enter Email Verification Code"
+msgstr "كود سري"
+
+#: templates/account/confirm_email_verification_code.html:15
+#: templates/account/confirm_login_code.html:15
+#, python-format
+msgid ""
+"We’ve sent a code to %(email_link)s. The code expires shortly, so please "
+"enter it soon."
 msgstr ""
+"لقد أرسلنا رمزًا إلى %(email_link)s. الرمز ينتهي قريبًا، لذا يرجى إدخاله قريبًا."
+
+#: templates/account/confirm_email_verification_code.html:27
+#: templates/account/email_confirm.html:24
+#: templates/account/reauthenticate.html:18
+#: templates/mfa/reauthenticate.html:18
+msgid "Confirm"
+msgstr "تأكيد"
 
 #: templates/account/confirm_login_code.html:5
 #: templates/account/confirm_login_code.html:27 templates/account/login.html:5
 #: templates/account/login.html:9 templates/account/login.html:31
 #: templates/account/request_login_code.html:5
-#: templates/allauth/layouts/base.html:62 templates/mfa/authenticate.html:5
-#: templates/mfa/authenticate.html:23 templates/openid/login.html:5
+#: templates/allauth/layouts/base.html:68 templates/mfa/authenticate.html:6
+#: templates/mfa/authenticate.html:24 templates/openid/login.html:5
 #: templates/openid/login.html:9 templates/openid/login.html:20
 #: templates/socialaccount/login.html:5
 #: templates/socialaccount/login_redirect.html:5
@@ -488,19 +561,7 @@ msgstr "تسجيل الدخول"
 
 #: templates/account/confirm_login_code.html:9
 msgid "Enter Sign-In Code"
-msgstr ""
-
-#: templates/account/confirm_login_code.html:15
-#, python-format
-msgid ""
-"We’ve sent a code to %(email_link)s. The code expires shortly, so please "
-"enter it soon."
-msgstr ""
-
-#: templates/account/confirm_login_code.html:34
-#: templates/account/request_login_code.html:31
-msgid "Other sign-in options"
-msgstr ""
+msgstr "أدخل رمز تسجيل الدخول"
 
 #: templates/account/email.html:4 templates/account/email.html:8
 msgid "Email Addresses"
@@ -530,7 +591,10 @@ msgstr "اجعله أساسيا"
 msgid "Re-send Verification"
 msgstr "إعادة ارسال رسالة التأكيد"
 
-#: templates/account/email.html:50 templates/socialaccount/connections.html:40
+#: templates/account/email.html:50
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:16
+#: templates/mfa/webauthn/authenticator_list.html:60
+#: templates/socialaccount/connections.html:40
 msgid "Remove"
 msgstr "احذف"
 
@@ -596,7 +660,7 @@ msgstr ""
 msgid ""
 "You are receiving this mail because the following change was made to your "
 "account:"
-msgstr ""
+msgstr "أنت تتلقى هذا البريد لأنه تم إجراء التغيير التالي على حسابك:"
 
 #: templates/account/email/base_notification.txt:10
 #, python-format
@@ -608,11 +672,16 @@ msgid ""
 "- Browser: %(user_agent)s\n"
 "- Date: %(timestamp)s"
 msgstr ""
+"0 إذا لم تتعرف على هذا التغيير، فيرجى اتخاذ الاحتياطات الأمنية المناسبة على "
+"الفور. ينشأ التغيير في حسابك من:.\n"
+"- عنوان IP: %(ip)s.\n"
+"- المتصفح: %(user_agent)s.\n"
+"- التاريخ: %(timestamp)s"
 
 #: templates/account/email/email_changed_message.txt:4
 #, python-format
 msgid "Your email has been changed from %(from_email)s to %(to_email)s."
-msgstr ""
+msgstr "J لقد تم تغيير بريدك الإلكتروني من %(from_email)s إلى %(to_email)s."
 
 #: templates/account/email/email_changed_subject.txt:3
 #, fuzzy
@@ -633,17 +702,37 @@ msgid "Email Confirmation"
 msgstr "تأكيد البريد الإلكتروني"
 
 #: templates/account/email/email_confirmation_message.txt:5
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "You're receiving this email because user %(user_display)s has given your "
+#| "email address to register an account on %(site_domain)s.\n"
+#| "\n"
+#| "To confirm this is correct, go to %(activate_url)s"
 msgid ""
 "You're receiving this email because user %(user_display)s has given your "
-"email address to register an account on %(site_domain)s.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s"
+"email address to register an account on %(site_domain)s."
 msgstr ""
 "تلقيت هذه الرسالة لأن المستخدم %(user_display)s أعطانا بريدك الإلكتروني "
 "لتسجيل حساب في %(site_domain)s.\n"
 "\n"
 "لتأكيد هذا، يرجى الذهاب إلى %(activate_url)s"
+
+#: templates/account/email/email_confirmation_message.txt:7
+#, fuzzy
+#| msgid ""
+#| "Your sign-in code is listed below. Please enter it in your open browser "
+#| "window."
+msgid ""
+"Your email verification code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+"رمز تسجيل الدخول الخاص بك مدرج أدناه. الرجاء إدخاله في نافذة المتصفح "
+"المفتوحة."
+
+#: templates/account/email/email_confirmation_message.txt:9
+#, python-format
+msgid "To confirm this is correct, go to %(activate_url)s"
+msgstr ""
 
 #: templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your Email Address"
@@ -652,7 +741,7 @@ msgstr "أكد عنوان البريد الإلكتروني"
 #: templates/account/email/email_deleted_message.txt:4
 #, python-format
 msgid "Email address %(deleted_email)s has been removed from your account."
-msgstr ""
+msgstr "تمت إزالة عنوان البريد الإلكتروني %(deleted_email)s من حسابك."
 
 #: templates/account/email/email_deleted_subject.txt:3
 #, fuzzy
@@ -665,11 +754,13 @@ msgid ""
 "Your sign-in code is listed below. Please enter it in your open browser "
 "window."
 msgstr ""
+"رمز تسجيل الدخول الخاص بك مدرج أدناه. الرجاء إدخاله في نافذة المتصفح "
+"المفتوحة."
 
 #: templates/account/email/login_code_message.txt:9
 #: templates/account/email/unknown_account_message.txt:6
 msgid "This mail can be safely ignored if you did not initiate this action."
-msgstr ""
+msgstr "يمكن تجاهل هذا البريد بأمان إذا لم تبدأ هذا الإجراء."
 
 #: templates/account/email/login_code_subject.txt:3
 #, fuzzy
@@ -742,10 +833,13 @@ msgid ""
 "an account with email %(email)s. However, we do not have any record of such "
 "an account in our database."
 msgstr ""
+"O أنت تتلقى هذا البريد الإلكتروني لأنك، أو حاول شخص آخر، الوصول إلى حساب "
+"باستخدام البريد الإلكتروني %(email)s. ومع ذلك، ليس لدينا أي سجل لمثل هذا "
+"الحساب في قاعدة بياناتنا."
 
 #: templates/account/email/unknown_account_message.txt:8
 msgid "If it was you, you can sign up for an account using the link below."
-msgstr ""
+msgstr "إذا كنت أنت، فيمكنك التسجيل للحصول على حساب باستخدام الرابط أدناه."
 
 #: templates/account/email/unknown_account_subject.txt:3
 #, fuzzy
@@ -766,7 +860,7 @@ msgstr "كلمة المرور الحالية"
 
 #: templates/account/email_change.html:31
 msgid "Changing to"
-msgstr ""
+msgstr "التغيير إلى"
 
 #: templates/account/email_change.html:35
 #, fuzzy
@@ -776,7 +870,7 @@ msgstr "ما زال عنوان البريد الإلكتروني بانتظار 
 
 #: templates/account/email_change.html:41
 msgid "Cancel Change"
-msgstr ""
+msgstr "إلغاء التغيير"
 
 #: templates/account/email_change.html:49
 #, fuzzy
@@ -802,12 +896,6 @@ msgid ""
 msgstr ""
 "يرجى تأكيد أن <a href=\"mailto:%(email)s\">%(email)s</a> هو عنوان بريد "
 "إلكتروني للمستخدم %(user_display)s."
-
-#: templates/account/email_confirm.html:24
-#: templates/account/reauthenticate.html:18
-#: templates/mfa/reauthenticate.html:18
-msgid "Confirm"
-msgstr "تأكيد"
 
 #: templates/account/email_confirm.html:30
 #: templates/account/messages/email_confirmation_failed.txt:2
@@ -838,12 +926,16 @@ msgstr ""
 "إذا لم يكن لديك حساب بالفعل،\n"
 "يرجى <a href=\"%(signup_url)s\">التسجيل</a> أولا."
 
-#: templates/account/login.html:41 templates/account/request_login_code.html:9
-msgid "Mail me a sign-in code"
+#: templates/account/login.html:42
+msgid "Sign in with a passkey"
 msgstr ""
 
+#: templates/account/login.html:47 templates/account/request_login_code.html:9
+msgid "Mail me a sign-in code"
+msgstr "أرسل لي رمز تسجيل الدخول"
+
 #: templates/account/logout.html:4 templates/account/logout.html:8
-#: templates/account/logout.html:21 templates/allauth/layouts/base.html:55
+#: templates/account/logout.html:21 templates/allauth/layouts/base.html:61
 #: templates/usersessions/usersession_list.html:64
 msgid "Sign Out"
 msgstr "تسجيل الخروج"
@@ -884,7 +976,7 @@ msgstr "تم تسجيل خروجك."
 #: templates/account/messages/login_code_sent.txt:2
 #, python-format
 msgid "A sign-in code has been mailed to %(email)s."
-msgstr ""
+msgstr "تم إرسال رمز تسجيل الدخول بالبريد إلى %(email)s."
 
 #: templates/account/messages/password_changed.txt:2
 msgid "Password successfully changed."
@@ -971,26 +1063,48 @@ msgstr "هل نسيت كلمة المرور؟"
 msgid ""
 "You will receive an email containing a special code for a password-free sign-"
 "in."
-msgstr ""
+msgstr "ستتلقى بريدًا إلكترونيًا يحتوي على رمز خاص لتسجيل الدخول بدون كلمة مرور."
 
 #: templates/account/request_login_code.html:24
 msgid "Request Code"
-msgstr ""
+msgstr "كود الطلب"
 
-#: templates/account/signup.html:4 templates/socialaccount/signup.html:5
+#: templates/account/request_login_code.html:30
+msgid "Other sign-in options"
+msgstr "خيارات تسجيل الدخول الأخرى"
+
+#: templates/account/signup.html:4 templates/account/signup_by_passkey.html:4
+#: templates/socialaccount/signup.html:5
 msgid "Signup"
 msgstr "التسجيل"
 
 #: templates/account/signup.html:8 templates/account/signup.html:30
-#: templates/allauth/layouts/base.html:68 templates/socialaccount/signup.html:9
+#: templates/account/signup_by_passkey.html:29
+#: templates/allauth/layouts/base.html:74 templates/socialaccount/signup.html:9
 #: templates/socialaccount/signup.html:25
 msgid "Sign Up"
 msgstr "الاشتراك"
 
-#: templates/account/signup.html:17
+#: templates/account/signup.html:17 templates/account/signup_by_passkey.html:17
 #, python-format
 msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
 msgstr "لديك حساب؟ %(link)sسجل الدخول%(end_link)s."
+
+#: templates/account/signup.html:39
+msgid "Sign up using a passkey"
+msgstr ""
+
+#: templates/account/signup_by_passkey.html:8
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Passkey Sign Up"
+msgstr "الاشتراك"
+
+#: templates/account/signup_by_passkey.html:36
+#, fuzzy
+#| msgid "Other sign-in options"
+msgid "Other options"
+msgstr "خيارات تسجيل الدخول الأخرى"
 
 #: templates/account/signup_closed.html:5
 #: templates/account/signup_closed.html:9
@@ -1080,36 +1194,42 @@ msgstr "رسائل:"
 msgid "Menu:"
 msgstr "قائمة:"
 
-#: templates/allauth/layouts/base.html:43 templates/mfa/authenticate.html:9
+#: templates/allauth/layouts/base.html:43
+#: templates/socialaccount/connections.html:5
+#: templates/socialaccount/connections.html:9
+msgid "Account Connections"
+msgstr "اتصالات الحساب"
+
+#: templates/allauth/layouts/base.html:49 templates/mfa/authenticate.html:10
 #: templates/mfa/index.html:5 templates/mfa/index.html:9
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "توثيق ذو عاملين"
 
-#: templates/allauth/layouts/base.html:49
+#: templates/allauth/layouts/base.html:55
 #: templates/usersessions/usersession_list.html:6
 #: templates/usersessions/usersession_list.html:10
 msgid "Sessions"
-msgstr ""
+msgstr "الجلسات"
 
-#: templates/mfa/authenticate.html:12
+#: templates/mfa/authenticate.html:13
 msgid ""
 "Your account is protected by two-factor authentication. Please enter an "
 "authenticator code:"
-msgstr ""
+msgstr "حسابك محمي بواسطة المصادقة الثنائية. الرجاء إدخال رمز المصادقة:"
 
 #: templates/mfa/email/recovery_codes_generated_message.txt:4
 msgid ""
 "A new set of Two-Factor Authentication recovery codes has been generated."
-msgstr ""
+msgstr "تم إنشاء مجموعة جديدة من رموز استرداد المصادقة الثنائية."
 
 #: templates/mfa/email/recovery_codes_generated_subject.txt:3
 msgid "New Recovery Codes Generated"
-msgstr ""
+msgstr "تم إنشاء رموز استرداد جديدة"
 
 #: templates/mfa/email/totp_activated_message.txt:4
 #: templates/mfa/messages/totp_activated.txt:2
 msgid "Authenticator app activated."
-msgstr ""
+msgstr "تم تفعيل تطبيق المصادقة."
 
 #: templates/mfa/email/totp_activated_subject.txt:3
 #, fuzzy
@@ -1120,46 +1240,61 @@ msgstr "كود سري"
 #: templates/mfa/email/totp_deactivated_message.txt:4
 #: templates/mfa/messages/totp_deactivated.txt:2
 msgid "Authenticator app deactivated."
-msgstr ""
+msgstr "تم تعطيل تطبيق المصادقة."
 
 #: templates/mfa/email/totp_deactivated_subject.txt:3
-#, fuzzy
-#| msgid "token secret"
 msgid "Authenticator App Deactivated"
-msgstr "كود سري"
+msgstr "تم تعطيل تطبيق المصادقة"
+
+#: templates/mfa/email/webauthn_added_message.txt:4
+#, fuzzy
+#| msgid "A new set of recovery codes has been generated."
+msgid "A new security key has been added."
+msgstr "تم إنشاء مجموعة جديدة من رموز الاسترداد."
+
+#: templates/mfa/email/webauthn_added_subject.txt:3
+msgid "Security Key Added"
+msgstr ""
+
+#: templates/mfa/email/webauthn_removed_message.txt:4
+#, fuzzy
+#| msgid "Your password has been deleted."
+msgid "A security key has been removed."
+msgstr "تم حذف كلمة المرور الخاصة بك."
+
+#: templates/mfa/email/webauthn_removed_subject.txt:3
+msgid "Security Key Removed"
+msgstr ""
 
 #: templates/mfa/index.html:14 templates/mfa/totp/base.html:4
 msgid "Authenticator App"
-msgstr ""
+msgstr "تطبيق المصادقة"
 
 #: templates/mfa/index.html:19
 msgid "Authentication using an authenticator app is active."
-msgstr ""
+msgstr "المصادقة باستخدام تطبيق المصادقة نشطة."
 
 #: templates/mfa/index.html:23
 msgid "An authenticator app is not active."
-msgstr ""
+msgstr "تطبيق المصادقة غير نشط."
 
 #: templates/mfa/index.html:32 templates/mfa/totp/deactivate_form.html:24
 msgid "Deactivate"
-msgstr ""
+msgstr "إلغاء التنشيط"
 
 #: templates/mfa/index.html:36 templates/mfa/totp/activate_form.html:32
 msgid "Activate"
+msgstr "تفعيل"
+
+#: templates/mfa/index.html:45 templates/mfa/webauthn/authenticator_list.html:8
+#: templates/mfa/webauthn/base.html:4
+msgid "Security Keys"
 msgstr ""
 
-#: templates/mfa/index.html:46 templates/mfa/recovery_codes/base.html:4
-#: templates/mfa/recovery_codes/generate.html:6
-#: templates/mfa/recovery_codes/index.html:6
-msgid "Recovery Codes"
-msgstr ""
-
-#: templates/mfa/index.html:51 templates/mfa/recovery_codes/index.html:9
+#: templates/mfa/index.html:50
 #, python-format
-msgid ""
-"There is %(unused_count)s out of %(total_count)s recovery codes available."
-msgid_plural ""
-"There are %(unused_count)s out of %(total_count)s recovery codes available."
+msgid "You have added %(count)s security key."
+msgid_plural "You have added %(count)s security keys."
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
@@ -1167,24 +1302,65 @@ msgstr[3] ""
 msgstr[4] ""
 msgstr[5] ""
 
-#: templates/mfa/index.html:55
+#: templates/mfa/index.html:54
+#: templates/mfa/webauthn/authenticator_list.html:12
+msgid "No security keys have been added."
+msgstr ""
+
+#: templates/mfa/index.html:62
+msgid "Manage"
+msgstr ""
+
+#: templates/mfa/index.html:67 templates/mfa/webauthn/add_form.html:18
+#: templates/mfa/webauthn/authenticator_list.html:70
+msgid "Add"
+msgstr ""
+
+#: templates/mfa/index.html:77 templates/mfa/recovery_codes/base.html:4
+#: templates/mfa/recovery_codes/generate.html:6
+#: templates/mfa/recovery_codes/index.html:6
+msgid "Recovery Codes"
+msgstr "رموز الاسترداد"
+
+#: templates/mfa/index.html:82 templates/mfa/recovery_codes/index.html:9
+#, python-format
+msgid ""
+"There is %(unused_count)s out of %(total_count)s recovery codes available."
+msgid_plural ""
+"There are %(unused_count)s out of %(total_count)s recovery codes available."
+msgstr[0] "هناك 6(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+msgstr[1] "هناك 6(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+msgstr[2] "هناك %(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+msgstr[3] "هناك %(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+msgstr[4] "هناك %(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+msgstr[5] "هناك %(unused_count)s من %(total_count)s رموز الاسترداد المتاحة."
+
+#: templates/mfa/index.html:86
 msgid "No recovery codes set up."
-msgstr ""
+msgstr "لم يتم إعداد رموز الاسترداد."
 
-#: templates/mfa/index.html:65
+#: templates/mfa/index.html:96
 msgid "View"
-msgstr ""
+msgstr "منظر"
 
-#: templates/mfa/index.html:71
+#: templates/mfa/index.html:102
 msgid "Download"
-msgstr ""
+msgstr "تحميل"
 
-#: templates/mfa/index.html:79 templates/mfa/recovery_codes/generate.html:29
+#: templates/mfa/index.html:110 templates/mfa/recovery_codes/generate.html:29
 msgid "Generate"
-msgstr ""
+msgstr "يولد"
 
 #: templates/mfa/messages/recovery_codes_generated.txt:2
 msgid "A new set of recovery codes has been generated."
+msgstr "تم إنشاء مجموعة جديدة من رموز الاسترداد."
+
+#: templates/mfa/messages/webauthn_added.txt:2
+msgid "Security key added."
+msgstr ""
+
+#: templates/mfa/messages/webauthn_removed.txt:2
+msgid "Security key removed."
 msgstr ""
 
 #: templates/mfa/reauthenticate.html:6
@@ -1195,32 +1371,32 @@ msgstr "كود سري"
 
 #: templates/mfa/recovery_codes/generate.html:9
 msgid "You are about to generate a new set of recovery codes for your account."
-msgstr ""
+msgstr "أنت على وشك إنشاء مجموعة جديدة من رموز الاسترداد لحسابك."
 
 #: templates/mfa/recovery_codes/generate.html:11
 msgid "This action will invalidate your existing codes."
-msgstr ""
+msgstr "سيؤدي هذا الإجراء إلى إبطال رموزك الحالية."
 
 #: templates/mfa/recovery_codes/generate.html:13
 msgid "Are you sure?"
-msgstr ""
+msgstr "هل أنت متأكد؟"
 
 #: templates/mfa/recovery_codes/index.html:13
 msgid "Unused codes"
-msgstr ""
+msgstr "رموز غير مستخدمة"
 
 #: templates/mfa/recovery_codes/index.html:25
 msgid "Download codes"
-msgstr ""
+msgstr "تنزيل الرموز"
 
 #: templates/mfa/recovery_codes/index.html:30
 msgid "Generate new codes"
-msgstr ""
+msgstr "توليد رموز جديدة"
 
 #: templates/mfa/totp/activate_form.html:4
 #: templates/mfa/totp/activate_form.html:8
 msgid "Activate Authenticator App"
-msgstr ""
+msgstr "تفعيل تطبيق المصادقة"
 
 #: templates/mfa/totp/activate_form.html:11
 msgid ""
@@ -1228,6 +1404,9 @@ msgid ""
 "below with your authenticator app. Then, input the verification code "
 "generated by the app below."
 msgstr ""
+"لحماية حسابك من خلال المصادقة الثنائية، قم بمسح رمز الاستجابة السريعة أدناه "
+"باستخدام تطبيق المصادقة الخاص بك. ثم أدخل رمز التحقق الذي أنشأه التطبيق "
+"أدناه."
 
 #: templates/mfa/totp/activate_form.html:21
 #, fuzzy
@@ -1240,16 +1419,108 @@ msgid ""
 "You can store this secret and use it to reinstall your authenticator app at "
 "a later time."
 msgstr ""
+"يمكنك تخزين هذا السر واستخدامه لإعادة تثبيت تطبيق المصادقة الخاص بك في وقت "
+"لاحق."
 
 #: templates/mfa/totp/deactivate_form.html:5
 #: templates/mfa/totp/deactivate_form.html:9
 msgid "Deactivate Authenticator App"
-msgstr ""
+msgstr "قم بإلغاء تنشيط تطبيق المصادقة"
 
 #: templates/mfa/totp/deactivate_form.html:12
 msgid ""
 "You are about to deactivate authenticator app based authentication. Are you "
 "sure?"
+msgstr ""
+"أنت على وشك إلغاء تنشيط المصادقة المستندة إلى تطبيق المصادقة. هل أنت متأكد؟"
+
+#: templates/mfa/webauthn/add_form.html:7
+#, fuzzy
+#| msgid "secret key"
+msgid "Add Security Key"
+msgstr "مفتاح سري"
+
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:6
+#, fuzzy
+#| msgid "secret key"
+msgid "Remove Security Key"
+msgstr "مفتاح سري"
+
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:9
+#, fuzzy
+#| msgid "Are you sure you want to sign out?"
+msgid "Are you sure you want to remove this security key?"
+msgstr "هل تريد حقا تسجيل الخروج؟"
+
+#: templates/mfa/webauthn/authenticator_list.html:21
+msgid "Usage"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:33
+msgid "Passkey"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:37
+#, fuzzy
+#| msgid "secret key"
+msgid "Security key"
+msgstr "مفتاح سري"
+
+#: templates/mfa/webauthn/authenticator_list.html:40
+msgid "This key does not indicate whether it is a passkey."
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:41
+#, fuzzy
+#| msgid "Unverified"
+msgid "Unspecified"
+msgstr "غير موثق"
+
+#: templates/mfa/webauthn/authenticator_list.html:46
+#, python-format
+msgid "Added on %(created_at)s"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:48
+#, python-format
+msgid "Last used %(last_used)s"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:56
+msgid "Edit"
+msgstr ""
+
+#: templates/mfa/webauthn/edit_form.html:7
+#, fuzzy
+#| msgid "secret key"
+msgid "Edit Security Key"
+msgstr "مفتاح سري"
+
+#: templates/mfa/webauthn/edit_form.html:18
+msgid "Save"
+msgstr ""
+
+#: templates/mfa/webauthn/signup_form.html:7
+#, fuzzy
+#| msgid "Current Password"
+msgid "Create Passkey"
+msgstr "كلمة المرور الحالية"
+
+#: templates/mfa/webauthn/signup_form.html:10
+msgid ""
+"You are about to create a passkey for your account. As you can add "
+"additional keys later on, you can use a descriptive name to tell the keys "
+"apart."
+msgstr ""
+
+#: templates/mfa/webauthn/signup_form.html:21
+#, fuzzy
+#| msgid "created"
+msgid "Create"
+msgstr "تمّ إنشاؤه"
+
+#: templates/mfa/webauthn/snippets/scripts.html:2
+msgid "This functionality requires JavaScript."
 msgstr ""
 
 #: templates/socialaccount/authentication_error.html:5
@@ -1267,11 +1538,6 @@ msgstr "فشل تسجيل الدخول الاجتماعي"
 msgid ""
 "An error occurred while attempting to login via your third-party account."
 msgstr "حدث خطأ أثناء محاولة تسجيل الدخول عن طريق حساب الشبكة الاجتماعية."
-
-#: templates/socialaccount/connections.html:5
-#: templates/socialaccount/connections.html:9
-msgid "Account Connections"
-msgstr "اتصالات الحساب"
 
 #: templates/socialaccount/connections.html:13
 #, fuzzy
@@ -1301,7 +1567,7 @@ msgstr "إضافة حساب طرف الثالث"
 #, python-format
 msgid ""
 "A third-party account from %(provider)s has been connected to your account."
-msgstr ""
+msgstr "تم ربط حساب جهة خارجية من %(provider)s بحسابك."
 
 #: templates/socialaccount/email/account_connected_subject.txt:3
 #, fuzzy
@@ -1314,7 +1580,7 @@ msgstr "إضافة حساب طرف الثالث"
 msgid ""
 "A third-party account from %(provider)s has been disconnected from your "
 "account."
-msgstr ""
+msgstr "تم قطع اتصال حساب جهة خارجية من %(provider)s بحسابك."
 
 #: templates/socialaccount/email/account_disconnected_subject.txt:3
 #, fuzzy
@@ -1373,12 +1639,6 @@ msgstr ""
 msgid "The third-party account has been connected."
 msgstr "تم ربط حساب التواصل الاجتماعي."
 
-#: templates/socialaccount/messages/account_connected_other.txt:2
-#, fuzzy
-#| msgid "The social account is already connected to a different account."
-msgid "The third-party account is already connected to a different account."
-msgstr "حساب التواصل الاجتماعي متصل مسبقا مع حساب مختلف."
-
 #: templates/socialaccount/messages/account_disconnected.txt:2
 #, fuzzy
 #| msgid "The social account has been disconnected."
@@ -1397,15 +1657,15 @@ msgstr ""
 
 #: templates/socialaccount/snippets/login.html:10
 msgid "Or use a third-party"
-msgstr ""
+msgstr "أو استخدم طرفًا ثالثًا"
 
 #: templates/usersessions/messages/sessions_logged_out.txt:2
 msgid "Signed out of all other sessions."
-msgstr ""
+msgstr "تم تسجيل الخروج من جميع الجلسات الأخرى."
 
 #: templates/usersessions/usersession_list.html:23
 msgid "Started At"
-msgstr ""
+msgstr "بدأت في"
 
 #: templates/usersessions/usersession_list.html:24
 #, fuzzy
@@ -1415,11 +1675,11 @@ msgstr "بريد إلكتروني"
 
 #: templates/usersessions/usersession_list.html:25
 msgid "Browser"
-msgstr ""
+msgstr "المتصفح"
 
 #: templates/usersessions/usersession_list.html:27
 msgid "Last seen at"
-msgstr ""
+msgstr "شوهد آخر مرة في"
 
 #: templates/usersessions/usersession_list.html:47
 #, fuzzy
@@ -1429,15 +1689,23 @@ msgstr "كلمة المرور الحالية"
 
 #: templates/usersessions/usersession_list.html:60
 msgid "Sign Out Other Sessions"
-msgstr ""
+msgstr "تسجيل الخروج من الجلسات الأخرى"
 
 #: usersessions/apps.py:9
 msgid "User Sessions"
-msgstr ""
+msgstr "جلسات المستخدم"
 
-#: usersessions/models.py:58
+#: usersessions/models.py:92
 msgid "session key"
-msgstr ""
+msgstr "مفتاح جلسة"
+
+#, fuzzy
+#~| msgid "Account Connections"
+#~ msgid "Account Connection"
+#~ msgstr "اتصالات الحساب"
+
+#~ msgid "Use security key or device"
+#~ msgstr "استخدم مفتاح او جهاز الحماية"
 
 #, python-brace-format
 #~ msgid "Password must be a minimum of {0} characters."

@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-import django
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
@@ -23,12 +22,13 @@ def setup_sociallogin_flow(request_factory):
         request = request_factory.get("/")
         request.user = AnonymousUser()
 
-        resp = complete_social_login(request, sociallogin)
-        session = client.session
-        for k, v in request.session.items():
-            session[k] = v
-        session.save()
-        return resp
+        with context.request_context(request):
+            resp = complete_social_login(request, sociallogin)
+            session = client.session
+            for k, v in request.session.items():
+                session[k] = v
+            session.save()
+            return resp
 
     return f
 
@@ -280,24 +280,13 @@ def test_unique_email_validation_signup(
     form = resp.context["form"]
     assert form["email"].value() == email
     resp = client.post(reverse("socialaccount_signup"), data={"email": email})
-
-    if django.VERSION >= (4, 1):
-        assertFormError(
-            resp.context["form"],
-            "email",
-            "An account already exists with this email address."
-            " Please sign in to that account first, then connect"
-            " your Unittest Server account.",
-        )
-    else:
-        assertFormError(
-            resp,
-            "form",
-            "email",
-            "An account already exists with this email address."
-            " Please sign in to that account first, then connect"
-            " your Unittest Server account.",
-        )
+    assertFormError(
+        resp.context["form"],
+        "email",
+        "An account already exists with this email address."
+        " Please sign in to that account first, then connect"
+        " your Unittest Server account.",
+    )
 
 
 def test_social_account_taken_at_signup(

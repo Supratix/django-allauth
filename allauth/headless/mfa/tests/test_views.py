@@ -1,6 +1,5 @@
 from allauth.account.models import EmailAddress, get_emailconfirmation_model
 from allauth.headless.constants import Flow
-from allauth.mfa.models import Authenticator
 
 
 def test_auth_unverified_email_and_mfa(
@@ -50,10 +49,12 @@ def test_auth_unverified_email_and_mfa(
             }
         )
     flows.append({"id": "provider_token", "providers": ["dummy"]})
+    flows.append({"id": "mfa_login_webauthn"})
     flows.append(
         {
             "id": "mfa_authenticate",
             "is_pending": True,
+            "types": ["totp"],
         }
     )
 
@@ -84,120 +85,31 @@ def test_auth_unverified_email_and_mfa(
     assert resp.status_code == 200
 
 
-def test_get_recovery_codes_requires_reauth(
-    auth_client, user_with_recovery_codes, headless_reverse
-):
-    rc = Authenticator.objects.get(
-        type=Authenticator.Type.RECOVERY_CODES, user=user_with_recovery_codes
-    )
-    resp = auth_client.get(headless_reverse("headless:mfa:manage_recovery_codes"))
-    assert resp.status_code == 401
-    data = resp.json()
-    assert data["meta"]["is_authenticated"]
-    resp = auth_client.post(
-        headless_reverse("headless:mfa:reauthenticate"),
-        data={"code": rc.wrap().get_unused_codes()[0]},
-        content_type="application/json",
-    )
-    assert resp.status_code == 200
-
-
-def test_get_recovery_codes(
-    auth_client,
-    user_with_recovery_codes,
-    headless_reverse,
-    reauthentication_bypass,
-):
-    with reauthentication_bypass():
-        resp = auth_client.get(headless_reverse("headless:mfa:manage_recovery_codes"))
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["data"]["type"] == "recovery_codes"
-    assert len(data["data"]["unused_codes"]) == 10
-
-    with reauthentication_bypass():
-        resp = auth_client.get(headless_reverse("headless:mfa:authenticators"))
-    data = resp.json()
-    assert len(data["data"]) == 2
-    rc = [autor for autor in data["data"] if autor["type"] == "recovery_codes"][0]
-    assert "unused_codes" not in rc
-
-
-def test_generate_recovery_codes(
-    auth_client,
+def test_dangling_mfa_is_logged_out(
+    client,
     user_with_totp,
-    headless_reverse,
-    reauthentication_bypass,
-):
-    with reauthentication_bypass():
-        resp = auth_client.get(headless_reverse("headless:mfa:manage_recovery_codes"))
-    assert resp.status_code == 404
-    with reauthentication_bypass():
-        resp = auth_client.post(
-            headless_reverse("headless:mfa:manage_recovery_codes"),
-            content_type="application/json",
-        )
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["data"]["type"] == "recovery_codes"
-    assert len(data["data"]["unused_codes"]) == 10
-
-
-def test_get_totp_not_active(
-    auth_client,
-    user,
-    headless_reverse,
-):
-    resp = auth_client.get(headless_reverse("headless:mfa:manage_totp"))
-    assert resp.status_code == 404
-    data = resp.json()
-    assert len(data["meta"]["secret"]) == 32
-
-
-def test_get_totp(
-    auth_client,
-    user_with_totp,
-    headless_reverse,
-):
-    resp = auth_client.get(headless_reverse("headless:mfa:manage_totp"))
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["data"]["type"] == "totp"
-    assert isinstance(data["data"]["created_at"], float)
-
-
-def test_deactivate_totp(
-    auth_client,
-    user_with_totp,
-    headless_reverse,
-    reauthentication_bypass,
-):
-    with reauthentication_bypass():
-        resp = auth_client.delete(headless_reverse("headless:mfa:manage_totp"))
-    assert resp.status_code == 200
-    assert not Authenticator.objects.filter(user=user_with_totp).exists()
-
-
-def test_activate_totp(
-    auth_client,
-    user,
-    headless_reverse,
-    reauthentication_bypass,
+    password_factory,
     settings,
     totp_validation_bypass,
+    headless_reverse,
+    headless_client,
+    user_password,
 ):
-    with reauthentication_bypass():
-        with totp_validation_bypass():
-            resp = auth_client.post(
-                headless_reverse("headless:mfa:manage_totp"),
-                data={"code": "42"},
-                content_type="application/json",
-            )
-    assert resp.status_code == 200
-    assert Authenticator.objects.filter(
-        user=user, type=Authenticator.Type.TOTP
-    ).exists()
+    settings.ACCOUNT_AUTHENTICATION_METHOD = "email"
+    resp = client.post(
+        headless_reverse("headless:account:login"),
+        data={
+            "email": user_with_totp.email,
+            "password": user_password,
+        },
+        content_type="application/json",
+    )
+    assert resp.status_code == 401
     data = resp.json()
-    assert data["data"]["type"] == "totp"
-    assert isinstance(data["data"]["created_at"], float)
-    assert data["data"]["last_used_at"] is None
+    flow = [f for f in data["data"]["flows"] if f["id"] == Flow.MFA_AUTHENTICATE][0]
+    assert flow["is_pending"]
+    assert flow["types"] == ["totp"]
+    resp = client.delete(headless_reverse("headless:account:current_session"))
+    data = resp.json()
+    assert resp.status_code == 401
+    assert all(not f.get("is_pending") for f in data["data"]["flows"])

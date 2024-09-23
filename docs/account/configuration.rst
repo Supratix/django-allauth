@@ -73,6 +73,18 @@ Available settings:
   verification mail is still sent, whereas in case of "none" no email
   verification mails are sent.
 
+``ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED`` (default: ``False``)
+  Constrols whether email verification is performed by means of following a link
+  in the email (``False``), or by entering a code (``True``).
+
+``ACCOUNT_EMAIL_VERIFICATION_BY_CODE_MAX_ATTEMPTS`` (default: ``3``)
+  This setting controls the maximum number of attempts the user has at inputting
+  a valid code.
+
+``ACCOUNT_EMAIL_VERIFICATION_BY_CODE_TIMEOUT`` (default: ``900``)
+  The code that is emailed has a limited life span. It expires this many seconds after
+  which it was sent.
+
 ``ACCOUNT_EMAIL_SUBJECT_PREFIX`` (default: ``"[Site] "``)
   Subject-line prefix to use for email messages sent. By default, the
   name of the current ``Site`` (``django.contrib.sites``) is used.
@@ -134,6 +146,12 @@ Available settings:
   This setting controls the maximum number of attempts the user has at inputting
   a valid code.
 
+``ACCOUNT_LOGIN_BY_CODE_REQUIRED`` (default: ``False``)
+  When enabled (in case of ``True``), every user logging in is required to input
+  a login confirmation code sent by email.  Alternatively, you can specify a set
+  of authentication methods (``"password"``, ``"mfa"``, or ``"socialaccount"``)
+  for which login codes are required.
+
 ``ACCOUNT_LOGIN_BY_CODE_TIMEOUT`` (default: ``180``)
   The code that is emailed has a limited life span. It expires this many seconds after
   which it was sent.
@@ -147,6 +165,16 @@ Available settings:
   confirming the email address **immediately after signing up**, assuming users
   didn't close their browser or used some sort of private browsing mode.
 
+``ACCOUNT_LOGIN_ON_PASSWORD_RESET`` (default: ``False``)
+  By changing this setting to ``True``, users will automatically be logged in
+  once they have reset their password. By default they are redirected to the
+  password reset done page.
+
+``ACCOUNT_LOGIN_TIMEOUT`` (default: ``900``)
+  The maximum allowed time (in seconds) for a login to go through the
+  various login stages. This limits, for example, the time span that the
+  2FA stage remains available.
+
 ``ACCOUNT_LOGOUT_ON_GET`` (default: ``False``)
   Determines whether or not the user is automatically logged out by a
   GET request. `GET is not designed to modify the server state <http://programmers.stackexchange.com/questions/188860/>`_,
@@ -158,11 +186,6 @@ Available settings:
   Determines whether or not the user is automatically logged out after
   changing or setting their password. See documentation for
   `Django's session invalidation on password change <https://docs.djangoproject.com/en/stable/topics/auth/default/#session-invalidation-on-password-change>`_.
-
-``ACCOUNT_LOGIN_ON_PASSWORD_RESET`` (default: ``False``)
-  By changing this setting to ``True``, users will automatically be logged in
-  once they have reset their password. By default they are redirected to the
-  password reset done page.
 
 ``ACCOUNT_LOGOUT_REDIRECT_URL`` (default: ``settings.LOGOUT_REDIRECT_URL or "/"``)
   The URL (or URL name) to return to after the user logs out. Defaults to

@@ -5,7 +5,7 @@ from allauth.account.internal import flows
 from allauth.account.internal.flows import password_change, password_reset
 from allauth.account.models import EmailAddress, Login
 from allauth.account.stages import EmailVerificationStage, LoginStageController
-from allauth.account.utils import complete_signup, send_email_confirmation
+from allauth.account.utils import send_email_confirmation
 from allauth.core import ratelimit
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.decorators import rate_limit
@@ -29,9 +29,11 @@ from allauth.headless.account.inputs import (
 from allauth.headless.base.response import (
     APIResponse,
     AuthenticationResponse,
+    ConflictResponse,
     ForbiddenResponse,
 )
 from allauth.headless.base.views import APIView, AuthenticatedAPIView
+from allauth.headless.internal import authkit
 from allauth.headless.internal.restkit.response import ErrorResponse
 
 
@@ -49,21 +51,29 @@ class ConfirmLoginCodeView(APIView):
     input_class = ConfirmLoginCodeInput
 
     def dispatch(self, request, *args, **kwargs):
+        auth_status = authkit.AuthenticationStatus(request)
+        self.stage = auth_status.get_pending_stage()
+        if not self.stage:
+            return ConflictResponse(request)
         self.user, self.pending_login = flows.login_by_code.get_pending_login(
-            request, peek=True
+            request, self.stage.login, peek=True
         )
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        flows.login_by_code.perform_login_by_code(
-            self.request, self.user, None, self.pending_login
-        )
+        flows.login_by_code.perform_login_by_code(self.request, self.stage, None)
         return AuthenticationResponse(request)
 
     def get_input_kwargs(self):
         kwargs = super().get_input_kwargs()
-        kwargs["code"] = self.pending_login.get("code") if self.pending_login else ""
+        kwargs["code"] = (
+            self.pending_login.get("code", "") if self.pending_login else ""
+        )
         return kwargs
+
+    def handle_invalid_input(self, input):
+        flows.login_by_code.record_invalid_attempt(self.request, self.stage.login)
+        return super().handle_invalid_input(input)
 
 
 @method_decorator(rate_limit(action="login"), name="handle")
@@ -71,6 +81,8 @@ class LoginView(APIView):
     input_class = LoginInput
 
     def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return ConflictResponse(request)
         credentials = self.input.cleaned_data
         user = get_account_adapter().authenticate(self.request, **credentials)
         if user:
@@ -81,26 +93,26 @@ class LoginView(APIView):
 
 @method_decorator(rate_limit(action="signup"), name="handle")
 class SignupView(APIView):
-    input_class = SignupInput
+    input_class = {"POST": SignupInput}
+    by_passkey = False
 
     def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return ConflictResponse(request)
         if not get_account_adapter().is_open_for_signup(request):
             return ForbiddenResponse(request)
         user, resp = self.input.try_save(request)
         if not resp:
             try:
-                complete_signup(
-                    request,
-                    user,
-                    email_verification=None,
-                    success_url=None,
+                flows.signup.complete_signup(
+                    request, user=user, by_passkey=self.by_passkey
                 )
             except ImmediateHttpResponse:
                 pass
         return AuthenticationResponse(request)
 
 
-class SessionView(AuthenticatedAPIView):
+class SessionView(APIView):
     def get(self, request, *args, **kwargs):
         return AuthenticationResponse(request)
 

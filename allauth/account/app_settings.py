@@ -1,15 +1,17 @@
 import warnings
+from enum import Enum
+from typing import Set, Union
 
 from django.core.exceptions import ImproperlyConfigured
 
 
-class AppSettings(object):
-    class AuthenticationMethod:
+class AppSettings:
+    class AuthenticationMethod(str, Enum):
         USERNAME = "username"
         EMAIL = "email"
         USERNAME_EMAIL = "username_email"
 
-    class EmailVerificationMethod:
+    class EmailVerificationMethod(str, Enum):
         # After signing up, keep the user account inactive until the email
         # address is verified
         MANDATORY = "mandatory"
@@ -123,7 +125,19 @@ class AppSettings(object):
             ret = self.EmailVerificationMethod.MANDATORY
         elif ret is False:
             ret = self.EmailVerificationMethod.OPTIONAL
-        return ret
+        return self.EmailVerificationMethod(ret)
+
+    @property
+    def EMAIL_VERIFICATION_BY_CODE_ENABLED(self):
+        return self._setting("EMAIL_VERIFICATION_BY_CODE_ENABLED", False)
+
+    @property
+    def EMAIL_VERIFICATION_BY_CODE_MAX_ATTEMPTS(self):
+        return self._setting("EMAIL_VERIFICATION_BY_CODE_MAX_ATTEMPTS", 3)
+
+    @property
+    def EMAIL_VERIFICATION_BY_CODE_TIMEOUT(self):
+        return self._setting("EMAIL_VERIFICATION_BY_CODE_TIMEOUT", 15 * 60)
 
     @property
     def MAX_EMAIL_ADDRESSES(self):
@@ -136,7 +150,7 @@ class AppSettings(object):
     @property
     def AUTHENTICATION_METHOD(self):
         ret = self._setting("AUTHENTICATION_METHOD", self.AuthenticationMethod.USERNAME)
-        return ret
+        return self.AuthenticationMethod(ret)
 
     @property
     def EMAIL_MAX_LENGTH(self):
@@ -427,6 +441,29 @@ class AppSettings(object):
     @property
     def LOGIN_BY_CODE_TIMEOUT(self):
         return self._setting("LOGIN_BY_CODE_TIMEOUT", 3 * 60)
+
+    @property
+    def LOGIN_TIMEOUT(self):
+        """
+        The maximum allowed time (in seconds) for a login to go through the
+        various login stages. This limits, for example, the time span that the
+        2FA stage remains available.
+        """
+        return self._setting("LOGIN_TIMEOUT", 15 * 60)
+
+    @property
+    def LOGIN_BY_CODE_REQUIRED(self) -> Union[bool, Set[str]]:
+        """
+        When enabled (in case of ``True``), every user logging in is
+        required to input a login confirmation code sent by email.
+        Alternatively, you can specify a set of authentication methods
+        (``"password"``, ``"mfa"``, or ``"socialaccount"``) for which login
+        codes are required.
+        """
+        value = self._setting("LOGIN_BY_CODE_REQUIRED", False)
+        if isinstance(value, bool):
+            return value
+        return set(value)
 
 
 _app_settings = AppSettings("ACCOUNT_")

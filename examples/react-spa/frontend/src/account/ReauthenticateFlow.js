@@ -1,30 +1,55 @@
 import { Link, useLocation } from 'react-router-dom'
 import { pathForFlow } from '../auth'
-import { Flows } from '../lib/allauth'
+import { Flows, AuthenticatorType } from '../lib/allauth'
 
 const flowLabels = {}
 flowLabels[Flows.REAUTHENTICATE] = 'Use your password'
-flowLabels[Flows.MFA_REAUTHENTICATE] = 'Use your authenticator app'
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.TOTP}`] = 'Use your authenticator app'
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.RECOVERY_CODES}`] = 'Use a recovery code'
+flowLabels[`${Flows.MFA_REAUTHENTICATE}:${AuthenticatorType.WEBAUTHN}`] = 'Use security key'
+
+function flowsToMethods (flows) {
+  const methods = []
+  flows.forEach(flow => {
+    if (flow.id === Flows.MFA_REAUTHENTICATE) {
+      flow.types.forEach(typ => {
+        const id = `${flow.id}:${typ}`
+        methods.push({
+          label: flowLabels[id],
+          id,
+          path: pathForFlow(flow, typ)
+        })
+      })
+    } else {
+      methods.push({
+        label: flowLabels[flow.id] || flow.id,
+        id: flow.id,
+        path: pathForFlow(flow)
+      })
+    }
+  })
+  return methods
+}
 
 export default function ReauthenticateFlow (props) {
   const location = useLocation()
-  const flows = location.state.reauth.data.flows
+  const methods = flowsToMethods(location.state.reauth.data.flows)
 
   return (
     <div>
-      <h1> Confirm Access</h1>
+      <h1>Confirm Access</h1>
       <p>
         Please reauthenticate to safeguard your account.
       </p>
       {props.children}
 
-      {flows.length > 1
+      {methods.length > 1
         ? <><h2>Alternative Options</h2>
           <ul>
-            {flows.filter(flow => flow.id !== props.flow).map(flow => {
+            {methods.filter(method => method.id !== props.method).map(method => {
               return (
-                <li key={flow.id}>
-                  <Link replace state={location.state} to={pathForFlow(flow.id) + location.search}>{flowLabels[flow.id] || flow.id}</Link>
+                <li key={method.id}>
+                  <Link replace state={location.state} to={method.path + location.search}>{method.label}</Link>
                 </li>
               )
             })}

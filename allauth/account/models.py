@@ -1,7 +1,10 @@
 import datetime
+import time
+from typing import Dict, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
 from django.core import signing
 from django.db import models
 from django.db.models import Q
@@ -9,9 +12,12 @@ from django.db.models.constraints import UniqueConstraint
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from . import app_settings, signals
-from .adapter import get_adapter
-from .managers import EmailAddressManager, EmailConfirmationManager
+from allauth.account import app_settings, signals
+from allauth.account.adapter import get_adapter
+from allauth.account.managers import (
+    EmailAddressManager,
+    EmailConfirmationManager,
+)
 
 
 class EmailAddress(models.Model):
@@ -123,11 +129,6 @@ class EmailConfirmationMixin:
         if not email_address.verified:
             confirmed = get_adapter().confirm_email(request, email_address)
             if confirmed:
-                signals.email_confirmed.send(
-                    sender=self.__class__,
-                    request=request,
-                    email_address=email_address,
-                )
                 return email_address
 
     def send(self, request=None, signup=False):
@@ -177,7 +178,7 @@ class EmailConfirmation(EmailConfirmationMixin, models.Model):
         )
         return expiration_date <= timezone.now()
 
-    key_expired.boolean = True
+    key_expired.boolean = True  # type: ignore[attr-defined]
 
     def confirm(self, request):
         if not self.key_expired():
@@ -189,7 +190,7 @@ class EmailConfirmation(EmailConfirmationMixin, models.Model):
         self.save()
 
 
-class EmailConfirmationHMAC(EmailConfirmationMixin, object):
+class EmailConfirmationHMAC(EmailConfirmationMixin):
     def __init__(self, email_address):
         self.email_address = email_address
 
@@ -230,15 +231,26 @@ class Login:
     case email verification is optional and we are only logging in).
     """
 
+    # Optional, because we might be prentending logins to prevent user
+    # enumeration.
+    user: Optional[AbstractBaseUser]
+    email_verification: app_settings.EmailVerificationMethod
+    signal_kwargs: Optional[Dict]
+    signup: bool
+    email: Optional[str]
+    state: Dict
+    initiated_at: float
+
     def __init__(
         self,
         user,
-        email_verification=None,
-        redirect_url=None,
-        signal_kwargs=None,
-        signup=False,
-        email=None,
-        state=None,
+        email_verification: Optional[app_settings.EmailVerificationMethod] = None,
+        redirect_url: Optional[str] = None,
+        signal_kwargs: Optional[Dict] = None,
+        signup: bool = False,
+        email: Optional[str] = None,
+        state: Optional[Dict] = None,
+        initiated_at: Optional[float] = None,
     ):
         self.user = user
         if not email_verification:
@@ -249,6 +261,7 @@ class Login:
         self.signup = signup
         self.email = email
         self.state = {} if state is None else state
+        self.initiated_at = initiated_at if initiated_at else time.time()
 
     def serialize(self):
         from allauth.account.utils import user_pk_to_url_str
@@ -262,13 +275,14 @@ class Login:
                 signal_kwargs["sociallogin"] = sociallogin.serialize()
 
         data = {
-            "user_pk": user_pk_to_url_str(self.user),
+            "user_pk": user_pk_to_url_str(self.user) if self.user else None,
             "email_verification": self.email_verification,
             "signup": self.signup,
             "redirect_url": self.redirect_url,
             "email": self.email,
             "signal_kwargs": signal_kwargs,
             "state": self.state,
+            "initiated_at": self.initiated_at,
         }
         return data
 
@@ -276,13 +290,12 @@ class Login:
     def deserialize(cls, data):
         from allauth.account.utils import url_str_to_user_pk
 
-        user = (
-            get_user_model()
-            .objects.filter(pk=url_str_to_user_pk(data["user_pk"]))
-            .first()
-        )
-        if user is None:
-            raise ValueError()
+        user = None
+        user_pk = data["user_pk"]
+        if user_pk is not None:
+            user = (
+                get_user_model().objects.filter(pk=url_str_to_user_pk(user_pk)).first()
+            )
         try:
             # :-( Knowledge of the `socialaccount` is entering the `account` app.
             signal_kwargs = data["signal_kwargs"]
@@ -301,13 +314,20 @@ class Login:
                 signup=data["signup"],
                 signal_kwargs=signal_kwargs,
                 state=data["state"],
+                initiated_at=data["initiated_at"],
             )
         except KeyError:
             raise ValueError()
 
 
 def get_emailconfirmation_model():
-    if app_settings.EMAIL_CONFIRMATION_HMAC:
+    if app_settings.EMAIL_VERIFICATION_BY_CODE_ENABLED:
+        from allauth.account.internal.flows.email_verification_by_code import (
+            EmailVerificationModel,
+        )
+
+        return EmailVerificationModel
+    elif app_settings.EMAIL_CONFIRMATION_HMAC:
         model = EmailConfirmationHMAC
     else:
         model = EmailConfirmation

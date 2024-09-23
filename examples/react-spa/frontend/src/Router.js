@@ -16,6 +16,7 @@ import Home from './Home'
 import ChangeEmail from './account/ChangeEmail'
 import ManageProviders from './socialaccount/ManageProviders'
 import VerifyEmail, { loader as verifyEmailLoader } from './account/VerifyEmail'
+import VerifyEmailByCode from './account/VerifyEmailByCode'
 import VerificationEmailSent from './account/VerificationEmailSent'
 import RequestPasswordReset from './account/RequestPasswordReset'
 import ChangePassword from './account/ChangePassword'
@@ -23,15 +24,24 @@ import MFAOverview, { loader as mfaOverviewLoader } from './mfa/MFAOverview'
 import ActivateTOTP, { loader as activateTOTPLoader } from './mfa/ActivateTOTP'
 import DeactivateTOTP from './mfa/DeactivateTOTP'
 import RecoveryCodes, { loader as recoveryCodesLoader } from './mfa/RecoveryCodes'
+import AddWebAuthn from './mfa/AddWebAuthn'
+import SignupByPasskey from './mfa/SignupByPasskey'
+import ReauthenticateWebAuthn from './mfa/ReauthenticateWebAuthn'
+import ListWebAuthn, { loader as listWebAuthnLoader } from './mfa/ListWebAuthn'
 import GenerateRecoveryCodes, { loader as generateRecoveryCodesLoader } from './mfa/GenerateRecoveryCodes'
 import ResetPassword, { loader as resetPasswordLoader } from './account/ResetPassword'
-import MFAAuthenticate from './mfa/MFAAuthenticate'
-import MFAReauthenticate from './mfa/MFAReauthenticate'
+import AuthenticateTOTP from './mfa/AuthenticateTOTP'
+import AuthenticateRecoveryCodes from './mfa/AuthenticateRecoveryCodes'
+import AuthenticateWebAuthn from './mfa/AuthenticateWebAuthn'
+import ReauthenticateRecoveryCodes from './mfa/ReauthenticateRecoveryCodes'
+import ReauthenticateTOTP from './mfa/ReauthenticateTOTP'
+import CreateSignupPasskey from './mfa/CreateSignupPasskey'
 import Reauthenticate from './account/Reauthenticate'
 import Sessions from './usersessions/Sessions'
 import Root from './Root'
+import { useConfig } from './auth/hooks'
 
-function createRouter () {
+function createRouter (config) {
   return createBrowserRouter([
     {
       path: '/',
@@ -82,8 +92,16 @@ function createRouter () {
           element: <AnonymousRoute><Signup /></AnonymousRoute>
         },
         {
+          path: '/account/signup/passkey',
+          element: <AnonymousRoute><SignupByPasskey /></AnonymousRoute>
+        },
+        {
+          path: '/account/signup/passkey/create',
+          element: <AnonymousRoute><CreateSignupPasskey /></AnonymousRoute>
+        },
+        {
           path: '/account/verify-email',
-          element: <VerificationEmailSent />
+          element: config.data.account.email_verification_by_code_enabled ? <VerifyEmailByCode /> : <VerificationEmailSent />
         },
         {
           path: '/account/verify-email/:key',
@@ -113,12 +131,28 @@ function createRouter () {
           element: <AuthenticatedRoute><Reauthenticate /></AuthenticatedRoute>
         },
         {
-          path: '/account/2fa/reauthenticate',
-          element: <AuthenticatedRoute><MFAReauthenticate /></AuthenticatedRoute>
+          path: '/account/reauthenticate/totp',
+          element: <AuthenticatedRoute><ReauthenticateTOTP /></AuthenticatedRoute>
         },
         {
-          path: '/account/2fa/authenticate',
-          element: <AnonymousRoute><MFAAuthenticate /></AnonymousRoute>
+          path: '/account/reauthenticate/recovery-codes',
+          element: <AuthenticatedRoute><ReauthenticateRecoveryCodes /></AuthenticatedRoute>
+        },
+        {
+          path: '/account/reauthenticate/webauthn',
+          element: <AuthenticatedRoute><ReauthenticateWebAuthn /></AuthenticatedRoute>
+        },
+        {
+          path: '/account/authenticate/totp',
+          element: <AnonymousRoute><AuthenticateTOTP /></AnonymousRoute>
+        },
+        {
+          path: '/account/authenticate/recovery-codes',
+          element: <AnonymousRoute><AuthenticateRecoveryCodes /></AnonymousRoute>
+        },
+        {
+          path: '/account/authenticate/webauthn',
+          element: <AnonymousRoute><AuthenticateWebAuthn /></AnonymousRoute>
         },
         {
           path: '/account/2fa/totp/activate',
@@ -140,6 +174,15 @@ function createRouter () {
           loader: generateRecoveryCodesLoader
         },
         {
+          path: '/account/2fa/webauthn',
+          element: <AuthenticatedRoute><ListWebAuthn /></AuthenticatedRoute>,
+          loader: listWebAuthnLoader
+        },
+        {
+          path: '/account/2fa/webauthn/add',
+          element: <AuthenticatedRoute><AddWebAuthn /></AuthenticatedRoute>
+        },
+        {
           path: '/account/sessions',
           element: <AuthenticatedRoute><Sessions /></AuthenticatedRoute>
         }
@@ -153,8 +196,9 @@ export default function Router () {
   // even before the <AuthContext/> trigger the initial loading of the auth.
   // state.
   const [router, setRouter] = useState(null)
+  const config = useConfig()
   useEffect(() => {
-    setRouter(createRouter())
-  }, [])
+    setRouter(createRouter(config))
+  }, [config])
   return router ? <RouterProvider router={router} /> : null
 }

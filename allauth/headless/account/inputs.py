@@ -80,7 +80,7 @@ class LoginInput(inputs.Input):
                 context.request, **credentials
             )
             if not self.user:
-                error_code = "%s_password_mismatch" % auth_method
+                error_code = "%s_password_mismatch" % auth_method.value
                 self.add_error(
                     "password", get_account_adapter().validation_error(error_code)
                 )
@@ -94,13 +94,15 @@ class VerifyEmailInput(inputs.Input):
         key = self.cleaned_data["key"]
         model = get_emailconfirmation_model()
         confirmation = model.from_key(key)
-        if (
-            not confirmation
-            or confirmation.key_expired()
-            or not confirmation.email_address.can_set_verified()
-        ):
-            raise get_account_adapter().validation_error("invalid_or_expired_key")
-
+        valid = confirmation and not confirmation.key_expired()
+        if not valid:
+            raise get_account_adapter().validation_error(
+                "incorrect_code"
+                if account_app_settings.EMAIL_VERIFICATION_BY_CODE_ENABLED
+                else "invalid_or_expired_key"
+            )
+        if valid and not confirmation.email_address.can_set_verified():
+            raise get_account_adapter().validation_error("email_taken")
         return confirmation
 
 

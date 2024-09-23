@@ -1,4 +1,6 @@
 from allauth.account.internal.flows import (
+    email_verification,
+    email_verification_by_code,
     login,
     login_by_code,
     logout,
@@ -13,6 +15,8 @@ from allauth.account.internal.flows import (
 __all__ = [
     "password_reset",
     "password_change",
+    "email_verification",
+    "email_verification_by_code",
     "login",
     "login_by_code",
     "logout",

@@ -280,7 +280,10 @@ def test_add_with_reauthentication(auth_client, user, user_password, settings):
     )
     assert not EmailAddress.objects.filter(email="john3@example.org").exists()
     assert resp.status_code == 302
-    assert resp["location"] == reverse("account_reauthenticate") + "?next=%2Femail%2F"
+    assert (
+        resp["location"]
+        == reverse("account_reauthenticate") + "?next=%2Faccounts%2Femail%2F"
+    )
     resp = auth_client.post(resp["location"], {"password": user_password})
     assert EmailAddress.objects.filter(email="john3@example.org").exists()
     assertTemplateUsed(resp, "account/messages/email_confirmation_sent.txt")
@@ -306,15 +309,21 @@ def test_add_not_allowed(
         reverse("account_email"),
         {"action_add": "", "email": email},
     )
-    if prevent_enumeration == "strict":
+    if prevent_enumeration:
         assert resp.status_code == 302
-        EmailAddress.objects.get(
+        email_address = EmailAddress.objects.get(
             email=email,
             user=user,
             verified=False,
             primary=False,
         )
         assertTemplateUsed(resp, "account/messages/email_confirmation_sent.txt")
+        key = EmailConfirmationHMAC(email_address).key
+        resp = auth_client.post(reverse("account_confirm_email", args=[key]))
+        assertTemplateUsed(resp, "account/messages/email_confirmation_failed.txt")
+        assert resp.status_code == 302
+        email_address.refresh_from_db()
+        assert not email_address.verified
     else:
         assert resp.status_code == 200
         assert resp.context["form"].errors == {

@@ -21,11 +21,12 @@ class BitbucketOAuth2Adapter(OAuth2Adapter):
             .get(self.profile_url, params={"access_token": token.token})
         )
         extra_data = resp.json()
-        if app_settings.QUERY_EMAIL and not extra_data.get("email"):
-            extra_data["email"] = self.get_email(token)
+        if app_settings.QUERY_EMAIL:
+            if email := self.get_email(token):
+                extra_data["email"] = email
         return self.get_provider().sociallogin_from_response(request, extra_data)
 
-    def get_email(self, token):
+    def get_email(self, token) -> str:
         """Fetches email address from email API endpoint"""
         resp = (
             get_adapter()
@@ -39,9 +40,8 @@ class BitbucketOAuth2Adapter(OAuth2Adapter):
             primary_emails = [e for e in emails if e.get("is_primary", False)]
             email = primary_emails[0].get("email")
         except (IndexError, TypeError, KeyError):
-            return ""
-        finally:
-            return email
+            pass
+        return email
 
 
 oauth_login = OAuth2LoginView.adapter_view(BitbucketOAuth2Adapter)

@@ -24,7 +24,7 @@ DATABASES = {
 }
 
 ROOT_URLCONF = "tests.regular.urls"
-LOGIN_URL = "/login/"
+LOGIN_URL = "/accounts/login/"
 
 TEMPLATES = [
     {
@@ -251,3 +251,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+
+MFA_SUPPORTED_TYPES = ["totp", "webauthn", "recovery_codes"]
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_PASSKEY_SIGNUP_ENABLED = True

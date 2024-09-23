@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, Optional
 
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
@@ -120,11 +120,13 @@ class Provider:
             provider=self.sub_id,
         )
         email_addresses = self.extract_email_addresses(response)
-        self.cleanup_email_addresses(
+        email = self.cleanup_email_addresses(
             common_fields.get("email"),
             email_addresses,
             email_verified=common_fields.get("email_verified"),
         )
+        if email:
+            common_fields["email"] = email
         sociallogin = SocialLogin(
             account=socialaccount, email_addresses=email_addresses
         )
@@ -144,7 +146,8 @@ class Provider:
     def extract_extra_data(self, data):
         """
         Extracts fields from `data` that will be stored in
-        `SocialAccount`'s `extra_data` JSONField.
+        `SocialAccount`'s `extra_data` JSONField, such as email address, first
+        name, last name, and phone number.
 
         :return: any JSON-serializable Python structure.
         """
@@ -164,7 +167,9 @@ class Provider:
         """
         return {}
 
-    def cleanup_email_addresses(self, email, addresses, email_verified=False):
+    def cleanup_email_addresses(
+        self, email: Optional[str], addresses: list, email_verified: bool = False
+    ) -> Optional[str]:
         # Avoid loading models before adapters have been registered.
         from allauth.account.models import EmailAddress
 
@@ -179,6 +184,12 @@ class Provider:
         for address in addresses:
             if adapter.is_email_verified(self, address.email):
                 address.verified = True
+
+        # Sort in order of importance (primary, verified...)
+        addresses.sort(key=lambda a: (a.primary, a.verified, a.email), reverse=True)
+        if not email and addresses:
+            email = addresses[0].email
+        return email
 
     def extract_email_addresses(self, data):
         """
@@ -198,7 +209,7 @@ class Provider:
         return pkg
 
     def stash_redirect_state(
-        self, request, process, next_url=None, data=None, **kwargs
+        self, request, process, next_url=None, data=None, state_id=None, **kwargs
     ):
         """
         Stashes state, returning a (random) state ID using which the state
@@ -208,7 +219,7 @@ class Provider:
         state = {"process": process, "data": data, **kwargs}
         if next_url:
             state["next"] = next_url
-        return statekit.stash_state(request, state)
+        return statekit.stash_state(request, state, state_id=state_id)
 
     def unstash_redirect_state(self, request, state_id):
         state = statekit.unstash_state(request, state_id)
@@ -223,7 +234,7 @@ class Provider:
         )
 
 
-class ProviderAccount(object):
+class ProviderAccount:
     def __init__(self, social_account):
         self.account = social_account
 
@@ -249,9 +260,31 @@ class ProviderAccount(object):
     def __str__(self):
         return self.to_str()
 
+    def get_user_data(self) -> Optional[Dict]:
+        """Typically, the ``extra_data`` directly contains user related keys.
+        For some providers, however, they are nested below a different key. In
+        that case, you can override this method so that the base ``__str__()``
+        will still be able to find the data.
+        """
+        ret = self.account.extra_data
+        if not isinstance(ret, dict):
+            ret = None
+        return ret
+
     def to_str(self):
         """
-        This did not use to work in the past due to py2 compatibility:
+        Returns string representation of this social account. This is the
+        unique identifier of the account, such as its username or its email
+        address. It should be meaningful to human beings, which means a numeric
+        ID number is rarely the appropriate representation here.
+
+        Subclasses are meant to override this method.
+
+        Users will see the string representation of their social accounts in
+        the page rendered by the allauth.socialaccount.views.connections view.
+
+        The following code did not use to work in the past due to py2
+        compatibility:
 
             class GoogleAccount(ProviderAccount):
                 def __str__(self):
@@ -261,4 +294,70 @@ class ProviderAccount(object):
         So we have this method `to_str` that can be overridden in a conventional
         fashion, without having to worry about it.
         """
+        user_data = self.get_user_data()
+        if user_data:
+            combi_values = {}
+            tbl = [
+                # Prefer username -- it's the most human recognizable & unique.
+                (
+                    None,
+                    [
+                        "username",
+                        "userName",
+                        "user_name",
+                        "login",
+                        "handle",
+                    ],
+                ),
+                # Second best is email
+                (None, ["email", "Email", "mail", "email_address"]),
+                (
+                    None,
+                    [
+                        "name",
+                        "display_name",
+                        "displayName",
+                        "Display_Name",
+                        "nickname",
+                    ],
+                ),
+                # Use the full name
+                (None, ["full_name", "fullName"]),
+                # Alternatively, try to assemble a full name ourselves.
+                (
+                    "first_name",
+                    [
+                        "first_name",
+                        "firstname",
+                        "firstName",
+                        "First_Name",
+                        "given_name",
+                        "givenName",
+                    ],
+                ),
+                (
+                    "last_name",
+                    [
+                        "last_name",
+                        "lastname",
+                        "lastName",
+                        "Last_Name",
+                        "family_name",
+                        "familyName",
+                        "surname",
+                    ],
+                ),
+            ]
+            for store_as, variants in tbl:
+                for key in variants:
+                    value = user_data.get(key)
+                    if isinstance(value, str):
+                        value = value.strip()
+                        if value and not store_as:
+                            return value
+                        combi_values[store_as] = value
+            first_name = combi_values.get("first_name") or ""
+            last_name = combi_values.get("last_name") or ""
+            if first_name or last_name:
+                return f"{first_name} {last_name}".strip()
         return self.get_brand()["name"]

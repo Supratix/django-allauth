@@ -1,4 +1,3 @@
-import django
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -112,28 +111,28 @@ class BaseSignupFormTests(TestCase):
         widget = field.widget
         self.assertEqual(widget.attrs.get("maxlength"), str(max_length))
 
-    @override_settings(
-        ACCOUNT_USERNAME_REQUIRED=True, ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE=True
-    )
-    def test_signup_email_verification(self):
-        data = {
-            "username": "username",
-            "email": "user@example.com",
-        }
-        form = BaseSignupForm(data, email_required=True)
-        self.assertFalse(form.is_valid())
 
-        data = {
-            "username": "username",
-            "email": "user@example.com",
-            "email2": "user@example.com",
-        }
-        form = BaseSignupForm(data, email_required=True)
-        self.assertTrue(form.is_valid())
+def test_signup_email_verification(settings, db):
+    settings.ACCOUNT_USERNAME_REQUIRED = True
+    settings.ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+    data = {
+        "username": "username",
+        "email": "user@example.com",
+    }
+    form = BaseSignupForm(data, email_required=True)
+    assert not form.is_valid()
 
-        data["email2"] = "anotheruser@example.com"
-        form = BaseSignupForm(data, email_required=True)
-        self.assertFalse(form.is_valid())
+    data = {
+        "username": "username",
+        "email": "user@example.com",
+        "email2": "USER@example.COM",
+    }
+    form = BaseSignupForm(data, email_required=True)
+    assert form.is_valid()
+
+    data["email2"] = "anotheruser@example.com"
+    form = BaseSignupForm(data, email_required=True)
+    assert not form.is_valid()
 
 
 @override_settings(
@@ -215,19 +214,11 @@ class SignupTests(TestCase):
                 "password2": "janedoe",
             },
         )
-        if django.VERSION >= (4, 1):
-            self.assertFormError(
-                resp.context["form"],
-                "password2",
-                "You must type the same password each time.",
-            )
-        else:
-            self.assertFormError(
-                resp,
-                "form",
-                "password2",
-                "You must type the same password each time.",
-            )
+        self.assertFormError(
+            resp.context["form"],
+            "password2",
+            "You must type the same password each time.",
+        )
 
     @override_settings(
         ACCOUNT_USERNAME_REQUIRED=True, ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE=True
@@ -273,21 +264,12 @@ class SignupTests(TestCase):
                 "password2": "johndoe",
             },
         )
-        if django.VERSION >= (4, 1):
-            self.assertFormError(resp.context["form"], None, [])
-            self.assertFormError(
-                resp.context["form"],
-                "password1",
-                ["This password is too short. It must contain at least 9 characters."],
-            )
-        else:
-            self.assertFormError(resp, "form", None, [])
-            self.assertFormError(
-                resp,
-                "form",
-                "password1",
-                ["This password is too short. It must contain at least 9 characters."],
-            )
+        self.assertFormError(resp.context["form"], None, [])
+        self.assertFormError(
+            resp.context["form"],
+            "password1",
+            ["This password is too short. It must contain at least 9 characters."],
+        )
 
 
 def test_prevent_enumeration_with_mandatory_verification(
@@ -310,6 +292,7 @@ def test_prevent_enumeration_with_mandatory_verification(
     assert resp.status_code == 302
     assert resp["location"] == reverse("account_email_verification_sent")
     assertTemplateUsed(resp, "account/email/account_already_exists_message.txt")
+    assertTemplateUsed(resp, "account/messages/email_confirmation_sent.txt")
     assert EmailAddress.objects.filter(email="john@example.org").count() == 1
 
 

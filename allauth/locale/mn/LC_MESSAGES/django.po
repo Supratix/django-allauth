@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-14 11:32-0500\n"
+"POT-Creation-Date: 2024-09-21 06:42-0500\n"
 "PO-Revision-Date: 2024-04-20 21:32+0200\n"
 "Last-Translator: Bilgutei Erdenebayar <beke0130@gmail.com>\n"
 "Language-Team: Mongolian <beke0130@gmail.com>\n"
@@ -18,87 +18,96 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: account/adapter.py:58
+#: account/adapter.py:51
 msgid "This account is currently inactive."
 msgstr "Энэ бүртгэл одоогоор идэвхгүй байна."
 
-#: account/adapter.py:60
+#: account/adapter.py:53
 #, fuzzy
 #| msgid "You cannot remove your primary email address (%(email)s)."
 msgid "You cannot remove your primary email address."
 msgstr "Та үндсэн имэйл хаяг (%(email)s)-г устгах боломжгүй."
 
-#: account/adapter.py:63
+#: account/adapter.py:56
 msgid "This email address is already associated with this account."
 msgstr "Энэ имэйл хаяг энэ бүртгэлтэй холбогдсон байна."
 
-#: account/adapter.py:66
+#: account/adapter.py:59
 msgid "The email address and/or password you specified are not correct."
 msgstr "Таны оруулсан имэйл хаяг болон/эсвэл нууц үг буруу байна."
 
-#: account/adapter.py:68
+#: account/adapter.py:61
 msgid "A user is already registered with this email address."
 msgstr "Өөр хэрэглэгч энэ имэйл хаягаар бүртгүүлсэн байна."
 
-#: account/adapter.py:69
+#: account/adapter.py:62
 msgid "Please type your current password."
 msgstr "Одоогийн нууц үгээ оруулна уу."
 
-#: account/adapter.py:70 mfa/adapter.py:30
+#: account/adapter.py:63 mfa/adapter.py:40
 msgid "Incorrect code."
 msgstr ""
 
-#: account/adapter.py:71
+#: account/adapter.py:64
 #, fuzzy
 #| msgid "Current Password"
 msgid "Incorrect password."
 msgstr "Одоогын Нууц Үг"
 
-#: account/adapter.py:72
+#: account/adapter.py:65
 #, fuzzy
 #| msgid "Bad Token"
 msgid "Invalid or expired key."
 msgstr "Муу токен"
 
-#: account/adapter.py:73
+#: account/adapter.py:66
 msgid "The password reset token was invalid."
 msgstr "Нууц үг шинэчлэх токен буруу байна."
 
-#: account/adapter.py:74
+#: account/adapter.py:67
 #, python-format
 msgid "You cannot add more than %d email addresses."
 msgstr "Та %d-с илүү имэйл хаяг нэмэх боломжгүй."
 
-#: account/adapter.py:76
+#: account/adapter.py:69
 msgid "Too many failed login attempts. Try again later."
 msgstr "Хэт олон амжилтгүй нэвтрэх оролдлого. Дараа дахин оролдоорой."
 
-#: account/adapter.py:78
+#: account/adapter.py:71
 msgid "The email address is not assigned to any user account"
 msgstr "Имэйл хаяг ямар ч хэрэглэгчийн бүртгэлтэй холбогдоогүй"
 
-#: account/adapter.py:79
+#: account/adapter.py:72
 #: templates/account/messages/unverified_primary_email.txt:2
 msgid "Your primary email address must be verified."
 msgstr "Таны үндсэн имэйл хаягийг баталгаажуулсан байх ёстой."
 
-#: account/adapter.py:81
+#: account/adapter.py:74
 msgid "Username can not be used. Please use other username."
 msgstr "Хэрэглэгчийн нэрийг ашиглах боломжгүй. Өөр нэр сонгоно уу."
 
-#: account/adapter.py:84
+#: account/adapter.py:77
 msgid "The username and/or password you specified are not correct."
 msgstr "Таны оруулсан имэйл хаяг болон/эсвэл нууц үг буруу байна."
 
-#: account/adapter.py:736
+#: account/adapter.py:741
 #, fuzzy
 #| msgid "Forgot Password?"
 msgid "Use your password"
 msgstr "Нууц Үг Мартсан?"
 
-#: account/adapter.py:747
-msgid "Use your authenticator app"
-msgstr ""
+#: account/adapter.py:750
+#, fuzzy
+#| msgid "token secret"
+msgid "Use authenticator app or code"
+msgstr "токен нууц"
+
+#: account/adapter.py:757 templates/mfa/authenticate.html:36
+#: templates/mfa/webauthn/reauthenticate.html:15
+#, fuzzy
+#| msgid "secret key"
+msgid "Use a security key"
+msgstr "нууц түлхүүр"
 
 #: account/admin.py:23
 #, fuzzy
@@ -110,123 +119,123 @@ msgstr "Таны үндсэн имэйл хаягийг баталгаажуул
 msgid "Accounts"
 msgstr "Бүртгэлүүд"
 
-#: account/forms.py:56 account/forms.py:477
+#: account/forms.py:57 account/forms.py:483
 msgid "You must type the same password each time."
 msgstr "Та өмнө оруулсантай ижил нууц үг оруулах ёстой."
 
-#: account/forms.py:91 account/forms.py:407 account/forms.py:558
-#: account/forms.py:673
+#: account/forms.py:92 account/forms.py:413 account/forms.py:573
+#: account/forms.py:685
 msgid "Password"
 msgstr "Нууц үг"
 
-#: account/forms.py:92
+#: account/forms.py:93
 msgid "Remember Me"
 msgstr "Намайг Санах"
 
-#: account/forms.py:102 account/forms.py:269 account/forms.py:493
-#: account/forms.py:576 account/forms.py:690
+#: account/forms.py:103 account/forms.py:270 account/forms.py:499
+#: account/forms.py:591 account/forms.py:702
 msgid "Email address"
 msgstr ""
 
-#: account/forms.py:106 account/forms.py:307 account/forms.py:490
-#: account/forms.py:571
+#: account/forms.py:107 account/forms.py:308 account/forms.py:496
+#: account/forms.py:586
 msgid "Email"
 msgstr "Имэйл хаяг"
 
-#: account/forms.py:109 account/forms.py:112 account/forms.py:259
-#: account/forms.py:262
+#: account/forms.py:110 account/forms.py:113 account/forms.py:260
+#: account/forms.py:263
 msgid "Username"
 msgstr "Хэрэглэгчийн нэр"
 
-#: account/forms.py:122
+#: account/forms.py:123
 msgid "Username or email"
 msgstr "Хэрэглэгчийн нэр эсвэл имэйл"
 
-#: account/forms.py:125
+#: account/forms.py:126
 msgctxt "field label"
 msgid "Login"
 msgstr "Нэвтрэх"
 
-#: account/forms.py:136
+#: account/forms.py:137
 #, fuzzy
 #| msgid "Forgot Password?"
 msgid "Forgot your password?"
 msgstr "Нууц Үг Мартсан?"
 
-#: account/forms.py:298
+#: account/forms.py:299
 msgid "Email (again)"
 msgstr "Имэйл (дахин)"
 
-#: account/forms.py:302
+#: account/forms.py:303
 msgid "Email address confirmation"
 msgstr "Имэйл хаягийн баталгаажуулалт"
 
-#: account/forms.py:310
+#: account/forms.py:311
 msgid "Email (optional)"
 msgstr "Имэйл (заавал биш)"
 
-#: account/forms.py:365
+#: account/forms.py:370
 msgid "You must type the same email each time."
 msgstr "Та өмнө оруулсантай ижил имэйл бичих ёстой."
 
-#: account/forms.py:413 account/forms.py:559
+#: account/forms.py:419 account/forms.py:574
 msgid "Password (again)"
 msgstr "Нууц үг (дахин)"
 
-#: account/forms.py:539
+#: account/forms.py:554
 msgid "Current Password"
 msgstr "Одоогын Нууц Үг"
 
-#: account/forms.py:541 account/forms.py:626
+#: account/forms.py:556 account/forms.py:638
 msgid "New Password"
 msgstr "Шинэ Нууц Үг"
 
-#: account/forms.py:542 account/forms.py:627
+#: account/forms.py:557 account/forms.py:639
 msgid "New Password (again)"
 msgstr "Шинэ Нууц Үг (дахин)"
 
-#: account/forms.py:713 account/forms.py:715 mfa/forms.py:15 mfa/forms.py:17
-#: mfa/forms.py:60
+#: account/forms.py:725 account/forms.py:727 mfa/base/forms.py:15
+#: mfa/base/forms.py:17 mfa/totp/forms.py:13
 msgid "Code"
 msgstr ""
 
-#: account/models.py:20
+#: account/models.py:26
 msgid "user"
 msgstr "хэрэглэгч"
 
-#: account/models.py:26 account/models.py:34 account/models.py:146
+#: account/models.py:32 account/models.py:40 account/models.py:147
 msgid "email address"
 msgstr "имэйл хаяг"
 
-#: account/models.py:28
+#: account/models.py:34
 msgid "verified"
 msgstr "баталгаажуулсан"
 
-#: account/models.py:29
+#: account/models.py:35
 msgid "primary"
 msgstr "үндсэн"
 
-#: account/models.py:35
+#: account/models.py:41
 msgid "email addresses"
 msgstr "имэйл хаягууд"
 
-#: account/models.py:149
+#: account/models.py:150
 msgid "created"
 msgstr "үүсгэсэн"
 
-#: account/models.py:150
+#: account/models.py:151
 msgid "sent"
 msgstr "илгээсэн"
 
-#: account/models.py:151 socialaccount/models.py:69
+#: account/models.py:152 socialaccount/models.py:69
 msgid "key"
 msgstr "түлхүүр"
 
-#: account/models.py:156
+#: account/models.py:157
 msgid "email confirmation"
 msgstr "имэйл баталгаажуулалт"
 
-#: account/models.py:157
+#: account/models.py:158
 msgid "email confirmations"
 msgstr "имэйл баталгаажуулалт"
 
@@ -234,42 +243,73 @@ msgstr "имэйл баталгаажуулалт"
 msgid "Headless"
 msgstr ""
 
-#: mfa/adapter.py:22
+#: mfa/adapter.py:32
 msgid ""
 "You cannot add an email address to an account protected by two-factor "
 "authentication."
 msgstr ""
 
-#: mfa/adapter.py:25
+#: mfa/adapter.py:35
 msgid "You cannot deactivate two-factor authentication."
 msgstr ""
 
-#: mfa/adapter.py:28
+#: mfa/adapter.py:38
 msgid ""
 "You cannot generate recovery codes without having two-factor authentication "
 "enabled."
 msgstr ""
 
-#: mfa/adapter.py:32
+#: mfa/adapter.py:42
 msgid ""
 "You cannot activate two-factor authentication until you have verified your "
 "email address."
+msgstr ""
+
+#: mfa/adapter.py:141
+#, fuzzy
+#| msgid "secret key"
+msgid "Master key"
+msgstr "нууц түлхүүр"
+
+#: mfa/adapter.py:143
+msgid "Backup key"
+msgstr ""
+
+#: mfa/adapter.py:144
+#, python-brace-format
+msgid "Key nr. {number}"
 msgstr ""
 
 #: mfa/apps.py:9
 msgid "MFA"
 msgstr ""
 
-#: mfa/forms.py:58
-msgid "Authenticator code"
-msgstr ""
-
-#: mfa/models.py:28
+#: mfa/models.py:24
 msgid "Recovery codes"
 msgstr ""
 
-#: mfa/models.py:29
+#: mfa/models.py:25
 msgid "TOTP Authenticator"
+msgstr ""
+
+#: mfa/models.py:26
+msgid "WebAuthn"
+msgstr ""
+
+#: mfa/totp/forms.py:11
+msgid "Authenticator code"
+msgstr ""
+
+#: mfa/webauthn/forms.py:56
+#, fuzzy
+#| msgid "Password"
+msgid "Passwordless"
+msgstr "Нууц үг"
+
+#: mfa/webauthn/forms.py:59
+msgid ""
+"Enabling passwordless operation allows you to sign in using just this key, "
+"but imposes additional requirements such as biometrics or PIN protection."
 msgstr ""
 
 #: socialaccount/adapter.py:36
@@ -308,6 +348,13 @@ msgstr ""
 "Та дараах гуравдагч этгээдийн аль нэг бүртгэлийг ашиглан өөрийн бүртгэлд "
 "нэвтэрч болно."
 
+#: socialaccount/adapter.py:47
+#: templates/socialaccount/messages/account_connected_other.txt:2
+#, fuzzy
+#| msgid "The social account is already connected to a different account."
+msgid "The third-party account is already connected to a different account."
+msgstr "Сошиал хаяг аль хэдийн өөр бүртгэлд холбогдсон байна."
+
 #: socialaccount/apps.py:9
 msgid "Social Accounts"
 msgstr "Сошиал Бүртгэлүүд"
@@ -342,7 +389,7 @@ msgstr "нууц түлхүүр"
 msgid "API secret, client secret, or consumer secret"
 msgstr "API нууц, клиент нууц эсвэл хэрэглэгчийн нууц"
 
-#: socialaccount/models.py:69
+#: socialaccount/models.py:69 templates/mfa/webauthn/authenticator_list.html:18
 msgid "Key"
 msgstr "Түлхүүр"
 
@@ -410,15 +457,19 @@ msgstr "сошиал апп токенууд"
 msgid "Invalid profile data"
 msgstr "Буруу профайлын өгөгдөл"
 
-#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:17
+#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:16
 #, fuzzy
 #| msgctxt "field label"
 #| msgid "Login"
 msgid "Login"
 msgstr "Нэвтрэх"
 
-#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:20
-#: templates/mfa/authenticate.html:27
+#: socialaccount/providers/dummy/templates/dummy/authenticate_form.html:19
+#: templates/account/confirm_email_verification_code.html:33
+#: templates/account/confirm_email_verification_code.html:37
+#: templates/account/confirm_login_code.html:32
+#: templates/mfa/authenticate.html:40
+#: templates/mfa/webauthn/signup_form.html:26
 msgid "Cancel"
 msgstr ""
 
@@ -476,15 +527,43 @@ msgid "Please reauthenticate to safeguard your account."
 msgstr ""
 
 #: templates/account/base_reauthenticate.html:19
+#: templates/mfa/authenticate.html:31
 msgid "Alternative options"
 msgstr ""
+
+#: templates/account/confirm_email_verification_code.html:5
+#, fuzzy
+#| msgid "email confirmation"
+msgid "Email Verification"
+msgstr "имэйл баталгаажуулалт"
+
+#: templates/account/confirm_email_verification_code.html:9
+#, fuzzy
+#| msgid "token secret"
+msgid "Enter Email Verification Code"
+msgstr "токен нууц"
+
+#: templates/account/confirm_email_verification_code.html:15
+#: templates/account/confirm_login_code.html:15
+#, python-format
+msgid ""
+"We’ve sent a code to %(email_link)s. The code expires shortly, so please "
+"enter it soon."
+msgstr ""
+
+#: templates/account/confirm_email_verification_code.html:27
+#: templates/account/email_confirm.html:24
+#: templates/account/reauthenticate.html:18
+#: templates/mfa/reauthenticate.html:18
+msgid "Confirm"
+msgstr "Баталгаажуулах"
 
 #: templates/account/confirm_login_code.html:5
 #: templates/account/confirm_login_code.html:27 templates/account/login.html:5
 #: templates/account/login.html:9 templates/account/login.html:31
 #: templates/account/request_login_code.html:5
-#: templates/allauth/layouts/base.html:62 templates/mfa/authenticate.html:5
-#: templates/mfa/authenticate.html:23 templates/openid/login.html:5
+#: templates/allauth/layouts/base.html:68 templates/mfa/authenticate.html:6
+#: templates/mfa/authenticate.html:24 templates/openid/login.html:5
 #: templates/openid/login.html:9 templates/openid/login.html:20
 #: templates/socialaccount/login.html:5
 #: templates/socialaccount/login_redirect.html:5
@@ -493,18 +572,6 @@ msgstr "Нэвтрэх"
 
 #: templates/account/confirm_login_code.html:9
 msgid "Enter Sign-In Code"
-msgstr ""
-
-#: templates/account/confirm_login_code.html:15
-#, python-format
-msgid ""
-"We’ve sent a code to %(email_link)s. The code expires shortly, so please "
-"enter it soon."
-msgstr ""
-
-#: templates/account/confirm_login_code.html:34
-#: templates/account/request_login_code.html:31
-msgid "Other sign-in options"
 msgstr ""
 
 #: templates/account/email.html:4 templates/account/email.html:8
@@ -535,7 +602,10 @@ msgstr "Үндсэн Болгох"
 msgid "Re-send Verification"
 msgstr "Баталгаажуулалтыг дахин илгээх"
 
-#: templates/account/email.html:50 templates/socialaccount/connections.html:40
+#: templates/account/email.html:50
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:16
+#: templates/mfa/webauthn/authenticator_list.html:60
+#: templates/socialaccount/connections.html:40
 msgid "Remove"
 msgstr "Устгах"
 
@@ -634,14 +704,23 @@ msgstr "имэйл баталгаажуулалт"
 #| "To confirm this is correct, go to %(activate_url)s"
 msgid ""
 "You're receiving this email because user %(user_display)s has given your "
-"email address to register an account on %(site_domain)s.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s"
+"email address to register an account on %(site_domain)s."
 msgstr ""
 "%(user_display)s хэрэглэгч %(site_domain)s дээр бүртгэл бүртгүүлэхийн "
 "тулданы и-мэйл хаягийг өгсөн тул та энэ имэйлийг хүлээн авч байна.\n"
 "\n"
 "Үүнийг зөв эсэхийг баталгаажуулахын тулд %(activate_url)s руу очно уу"
+
+#: templates/account/email/email_confirmation_message.txt:7
+msgid ""
+"Your email verification code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.txt:9
+#, python-format
+msgid "To confirm this is correct, go to %(activate_url)s"
+msgstr ""
 
 #: templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your Email Address"
@@ -815,12 +894,6 @@ msgstr ""
 "<a href=\"mailto:%(email)s\">%(email)s</a> нь %(user_display)s "
 "хэрэглэгчийнимайл хаяг гэдгийг баталгаажуулна уу."
 
-#: templates/account/email_confirm.html:24
-#: templates/account/reauthenticate.html:18
-#: templates/mfa/reauthenticate.html:18
-msgid "Confirm"
-msgstr "Баталгаажуулах"
-
 #: templates/account/email_confirm.html:30
 #: templates/account/messages/email_confirmation_failed.txt:2
 #, fuzzy, python-format
@@ -851,12 +924,16 @@ msgstr ""
 "Хэрэв та бүртгэл үүсгээгүй байгаа бол эхлээд %(link)sбүртгүүлнэ "
 "үү%(end_link)s."
 
-#: templates/account/login.html:41 templates/account/request_login_code.html:9
+#: templates/account/login.html:42
+msgid "Sign in with a passkey"
+msgstr ""
+
+#: templates/account/login.html:47 templates/account/request_login_code.html:9
 msgid "Mail me a sign-in code"
 msgstr ""
 
 #: templates/account/logout.html:4 templates/account/logout.html:8
-#: templates/account/logout.html:21 templates/allauth/layouts/base.html:55
+#: templates/account/logout.html:21 templates/allauth/layouts/base.html:61
 #: templates/usersessions/usersession_list.html:64
 msgid "Sign Out"
 msgstr "Гарах"
@@ -1001,21 +1078,41 @@ msgstr ""
 msgid "Request Code"
 msgstr ""
 
-#: templates/account/signup.html:4 templates/socialaccount/signup.html:5
+#: templates/account/request_login_code.html:30
+msgid "Other sign-in options"
+msgstr ""
+
+#: templates/account/signup.html:4 templates/account/signup_by_passkey.html:4
+#: templates/socialaccount/signup.html:5
 msgid "Signup"
 msgstr "Бүртгүүлэх"
 
 #: templates/account/signup.html:8 templates/account/signup.html:30
-#: templates/allauth/layouts/base.html:68 templates/socialaccount/signup.html:9
+#: templates/account/signup_by_passkey.html:29
+#: templates/allauth/layouts/base.html:74 templates/socialaccount/signup.html:9
 #: templates/socialaccount/signup.html:25
 msgid "Sign Up"
 msgstr "Бүртгүүлэх"
 
-#: templates/account/signup.html:17
+#: templates/account/signup.html:17 templates/account/signup_by_passkey.html:17
 #, python-format
 msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
 msgstr ""
 "Бүртгэлтэй юу? Тэгвэл бүртгэлтэй хаягаар %(link)sнэвтрэнэ үү%(end_link)s."
+
+#: templates/account/signup.html:39
+msgid "Sign up using a passkey"
+msgstr ""
+
+#: templates/account/signup_by_passkey.html:8
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Passkey Sign Up"
+msgstr "Бүртгүүлэх"
+
+#: templates/account/signup_by_passkey.html:36
+msgid "Other options"
+msgstr ""
 
 #: templates/account/signup_closed.html:5
 #: templates/account/signup_closed.html:9
@@ -1129,18 +1226,24 @@ msgstr ""
 msgid "Menu:"
 msgstr ""
 
-#: templates/allauth/layouts/base.html:43 templates/mfa/authenticate.html:9
+#: templates/allauth/layouts/base.html:43
+#: templates/socialaccount/connections.html:5
+#: templates/socialaccount/connections.html:9
+msgid "Account Connections"
+msgstr "Бүртгэлийн холболтууд"
+
+#: templates/allauth/layouts/base.html:49 templates/mfa/authenticate.html:10
 #: templates/mfa/index.html:5 templates/mfa/index.html:9
 msgid "Two-Factor Authentication"
 msgstr ""
 
-#: templates/allauth/layouts/base.html:49
+#: templates/allauth/layouts/base.html:55
 #: templates/usersessions/usersession_list.html:6
 #: templates/usersessions/usersession_list.html:10
 msgid "Sessions"
 msgstr ""
 
-#: templates/mfa/authenticate.html:12
+#: templates/mfa/authenticate.html:13
 msgid ""
 "Your account is protected by two-factor authentication. Please enter an "
 "authenticator code:"
@@ -1177,6 +1280,24 @@ msgstr ""
 msgid "Authenticator App Deactivated"
 msgstr "токен нууц"
 
+#: templates/mfa/email/webauthn_added_message.txt:4
+msgid "A new security key has been added."
+msgstr ""
+
+#: templates/mfa/email/webauthn_added_subject.txt:3
+msgid "Security Key Added"
+msgstr ""
+
+#: templates/mfa/email/webauthn_removed_message.txt:4
+#, fuzzy
+#| msgid "You have confirmed %(email)s."
+msgid "A security key has been removed."
+msgstr "Та %(email)s-г баталгаажууллаа."
+
+#: templates/mfa/email/webauthn_removed_subject.txt:3
+msgid "Security Key Removed"
+msgstr ""
+
 #: templates/mfa/index.html:14 templates/mfa/totp/base.html:4
 msgid "Authenticator App"
 msgstr ""
@@ -1197,13 +1318,39 @@ msgstr ""
 msgid "Activate"
 msgstr ""
 
-#: templates/mfa/index.html:46 templates/mfa/recovery_codes/base.html:4
+#: templates/mfa/index.html:45 templates/mfa/webauthn/authenticator_list.html:8
+#: templates/mfa/webauthn/base.html:4
+msgid "Security Keys"
+msgstr ""
+
+#: templates/mfa/index.html:50
+#, python-format
+msgid "You have added %(count)s security key."
+msgid_plural "You have added %(count)s security keys."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/mfa/index.html:54
+#: templates/mfa/webauthn/authenticator_list.html:12
+msgid "No security keys have been added."
+msgstr ""
+
+#: templates/mfa/index.html:62
+msgid "Manage"
+msgstr ""
+
+#: templates/mfa/index.html:67 templates/mfa/webauthn/add_form.html:18
+#: templates/mfa/webauthn/authenticator_list.html:70
+msgid "Add"
+msgstr ""
+
+#: templates/mfa/index.html:77 templates/mfa/recovery_codes/base.html:4
 #: templates/mfa/recovery_codes/generate.html:6
 #: templates/mfa/recovery_codes/index.html:6
 msgid "Recovery Codes"
 msgstr ""
 
-#: templates/mfa/index.html:51 templates/mfa/recovery_codes/index.html:9
+#: templates/mfa/index.html:82 templates/mfa/recovery_codes/index.html:9
 #, python-format
 msgid ""
 "There is %(unused_count)s out of %(total_count)s recovery codes available."
@@ -1212,24 +1359,32 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/mfa/index.html:55
+#: templates/mfa/index.html:86
 msgid "No recovery codes set up."
 msgstr ""
 
-#: templates/mfa/index.html:65
+#: templates/mfa/index.html:96
 msgid "View"
 msgstr ""
 
-#: templates/mfa/index.html:71
+#: templates/mfa/index.html:102
 msgid "Download"
 msgstr ""
 
-#: templates/mfa/index.html:79 templates/mfa/recovery_codes/generate.html:29
+#: templates/mfa/index.html:110 templates/mfa/recovery_codes/generate.html:29
 msgid "Generate"
 msgstr ""
 
 #: templates/mfa/messages/recovery_codes_generated.txt:2
 msgid "A new set of recovery codes has been generated."
+msgstr ""
+
+#: templates/mfa/messages/webauthn_added.txt:2
+msgid "Security key added."
+msgstr ""
+
+#: templates/mfa/messages/webauthn_removed.txt:2
+msgid "Security key removed."
 msgstr ""
 
 #: templates/mfa/reauthenticate.html:6
@@ -1297,6 +1452,95 @@ msgid ""
 "sure?"
 msgstr ""
 
+#: templates/mfa/webauthn/add_form.html:7
+#, fuzzy
+#| msgid "secret key"
+msgid "Add Security Key"
+msgstr "нууц түлхүүр"
+
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:6
+#, fuzzy
+#| msgid "secret key"
+msgid "Remove Security Key"
+msgstr "нууц түлхүүр"
+
+#: templates/mfa/webauthn/authenticator_confirm_delete.html:9
+#, fuzzy
+#| msgid "Are you sure you want to sign out?"
+msgid "Are you sure you want to remove this security key?"
+msgstr "Та холболт салгахдаа итгэлтэй байна уу?"
+
+#: templates/mfa/webauthn/authenticator_list.html:21
+msgid "Usage"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:33
+msgid "Passkey"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:37
+#, fuzzy
+#| msgid "secret key"
+msgid "Security key"
+msgstr "нууц түлхүүр"
+
+#: templates/mfa/webauthn/authenticator_list.html:40
+msgid "This key does not indicate whether it is a passkey."
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:41
+#, fuzzy
+#| msgid "Unverified"
+msgid "Unspecified"
+msgstr "Баталгаажаагүй"
+
+#: templates/mfa/webauthn/authenticator_list.html:46
+#, python-format
+msgid "Added on %(created_at)s"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:48
+#, python-format
+msgid "Last used %(last_used)s"
+msgstr ""
+
+#: templates/mfa/webauthn/authenticator_list.html:56
+msgid "Edit"
+msgstr ""
+
+#: templates/mfa/webauthn/edit_form.html:7
+#, fuzzy
+#| msgid "secret key"
+msgid "Edit Security Key"
+msgstr "нууц түлхүүр"
+
+#: templates/mfa/webauthn/edit_form.html:18
+msgid "Save"
+msgstr ""
+
+#: templates/mfa/webauthn/signup_form.html:7
+#, fuzzy
+#| msgid "Current Password"
+msgid "Create Passkey"
+msgstr "Одоогын Нууц Үг"
+
+#: templates/mfa/webauthn/signup_form.html:10
+msgid ""
+"You are about to create a passkey for your account. As you can add "
+"additional keys later on, you can use a descriptive name to tell the keys "
+"apart."
+msgstr ""
+
+#: templates/mfa/webauthn/signup_form.html:21
+#, fuzzy
+#| msgid "created"
+msgid "Create"
+msgstr "үүсгэсэн"
+
+#: templates/mfa/webauthn/snippets/scripts.html:2
+msgid "This functionality requires JavaScript."
+msgstr ""
+
 #: templates/socialaccount/authentication_error.html:5
 #: templates/socialaccount/authentication_error.html:9
 #, fuzzy
@@ -1312,11 +1556,6 @@ msgstr "Сошиал-р нэвтрэхэд алдаа гарлаа"
 msgid ""
 "An error occurred while attempting to login via your third-party account."
 msgstr "Таны сошиал бүртгэлээр нэвтрэхийг оролдох үед алдаа гарлаа."
-
-#: templates/socialaccount/connections.html:5
-#: templates/socialaccount/connections.html:9
-msgid "Account Connections"
-msgstr "Бүртгэлийн холболтууд"
 
 #: templates/socialaccount/connections.html:13
 #, fuzzy
@@ -1415,12 +1654,6 @@ msgstr ""
 msgid "The third-party account has been connected."
 msgstr "Сошиал хаяг холбогдсон байна."
 
-#: templates/socialaccount/messages/account_connected_other.txt:2
-#, fuzzy
-#| msgid "The social account is already connected to a different account."
-msgid "The third-party account is already connected to a different account."
-msgstr "Сошиал хаяг аль хэдийн өөр бүртгэлд холбогдсон байна."
-
 #: templates/socialaccount/messages/account_disconnected.txt:2
 #, fuzzy
 #| msgid "The social account has been disconnected."
@@ -1476,9 +1709,14 @@ msgstr ""
 msgid "User Sessions"
 msgstr ""
 
-#: usersessions/models.py:58
+#: usersessions/models.py:92
 msgid "session key"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Account Connections"
+#~ msgid "Account Connection"
+#~ msgstr "Бүртгэлийн холболтууд"
 
 #, python-brace-format
 #~ msgid "Password must be a minimum of {0} characters."
